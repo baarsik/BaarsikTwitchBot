@@ -1,0 +1,19 @@
+﻿{
+  "channel": {
+    "name": "",
+    "oauth": "oauth:"
+  },
+  "oauth": {
+    "clientId": "",
+    "clientSecret": "",
+    "scopes": "bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:moderate chat:edit channel:moderate whispers:edit channel_subscriptions chat:read whispers:read"
+  },
+  "usersToIgnore": [],
+  "rewardNames": {
+    "musicRequest": "Song Request",
+    "musicRequestPlus": "Song Request+",
+    "maximumLengthInSeconds": 360,
+    "displaySongName": true 
+  },
+  "connectionString": "Server=localhost;Database=BaarsikTwitchBot;Trusted_Connection=True;Integrated Security=true;"
+}
