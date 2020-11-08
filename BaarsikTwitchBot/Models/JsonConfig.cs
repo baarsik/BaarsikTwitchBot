@@ -6,7 +6,7 @@ namespace BaarsikTwitchBot.Models
     {
         public ChannelCredentials Channel { get; set; }
         public OAuthCredentials OAuth { get; set; }
-        public ICollection<string> UsersToIgnore { get; set; }
+        public ChatSettings Chat { get; set; }
         public SongRequestManagerSettings SongRequestManager { get; set; }
         public string ConnectionString { get; set; }
 
@@ -20,6 +20,12 @@ namespace BaarsikTwitchBot.Models
         {
             public string ClientID { get; set; }
             public string ClientSecret { get; set; }
+        }
+
+        public class ChatSettings
+        {
+            public bool DisableUnsafeCommands { get; set; }
+            public ICollection<string> UsersToIgnore { get; set; }
         }
 
         public class SongRequestManagerSettings

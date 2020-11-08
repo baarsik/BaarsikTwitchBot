@@ -8,7 +8,10 @@
     "clientSecret": "",
     "scopes": "bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:moderate chat:edit channel:moderate whispers:edit channel_subscriptions chat:read whispers:read"
   },
-  "usersToIgnore": [],
+  "chat": {
+    "disableUnsafeCommands": false,
+    "usersToIgnore": []
+  },
   "rewardNames": {
     "musicRequest": "Song Request",
     "musicRequestPlus": "Song Request+",

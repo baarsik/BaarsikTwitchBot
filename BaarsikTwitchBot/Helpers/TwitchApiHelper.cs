@@ -165,7 +165,7 @@ namespace BaarsikTwitchBot.Helpers
             viewersNames.AddRange(jsonObj.chatters.broadcaster.ToObject<string[]>());
 
             var validFollowerViewerNames = viewersNames
-                .Where(name => !_config.UsersToIgnore.Contains(name.ToLower())
+                .Where(name => !_config.Chat.UsersToIgnore.Contains(name.ToLower())
                             && (BotUsers.Any(f => string.Equals(name, f.DisplayName, StringComparison.CurrentCultureIgnoreCase) || string.Equals(name, f.Login, StringComparison.CurrentCultureIgnoreCase))
                                 || string.Equals(name, _config.Channel.Name, StringComparison.CurrentCultureIgnoreCase)))
                 .ToList();

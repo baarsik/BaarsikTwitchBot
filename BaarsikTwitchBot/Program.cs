@@ -33,8 +33,6 @@ namespace BaarsikTwitchBot
                 builder.AddConsole();
                 builder.SetMinimumLevel(LogLevel.Error);
                 builder.AddFilter("Microsoft.EntityFrameworkCore.Database.Command", LogLevel.Warning);
-                builder.AddFilter("Microsoft.EntityFrameworkCore.Infrastructure", LogLevel.Warning);
-                builder.AddFilter("Microsoft.Hosting.Lifetime", LogLevel.Warning);
             });
 
         public static void Main(string[] args)
@@ -143,6 +141,8 @@ namespace BaarsikTwitchBot
             services.AddSingleton<TwitchApiHelper>();
             services.AddScoped<DbHelper>();
             autoRegisterClasses.ForEach(x => services.AddScoped(x));
+
+            services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
 
             ServiceProvider = services.BuildServiceProvider();
 

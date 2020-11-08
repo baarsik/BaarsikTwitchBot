@@ -10,13 +10,15 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
     public class LoveChatHook : IChatHook
     {
         private readonly TwitchClient _client;
+        private readonly JsonConfig _config;
 
-        public LoveChatHook(TwitchClient client)
+        public LoveChatHook(TwitchClient client, JsonConfig config)
         {
             _client = client;
+            _config = config;
         }
 
-        public bool IsEnabled => true;
+        public bool IsEnabled => !_config.Chat.DisableUnsafeCommands;
 
         public ChatHookAccessType Access => ChatHookAccessType.Everyone;
 
