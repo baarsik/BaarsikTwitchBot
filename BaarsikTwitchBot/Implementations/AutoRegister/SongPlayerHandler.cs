@@ -144,6 +144,19 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                     return;
             }
 
+            if (_requestQueue.Any(x => x.YoutubeVideo.Id == video.Id))
+            {
+                switch (requestType)
+                {
+                    case SongRequestType.Default when !_config.SongRequestManager.AllowDuplicatesDefault:
+                    case SongRequestType.Plus when !_config.SongRequestManager.AllowDuplicatesPlus:
+                        _client.SendMessage(_config.Channel.Name, _config.SongRequestManager.DisplaySongName
+                            ? $"@{e.DisplayName}, песня '{video.Title}' уже находится в очереди"
+                            : $"@{e.DisplayName}, данная песня уже находится в очереди");
+                        break;
+                }
+            }
+
             var songRequest = new SongRequest
             { 
                 RewardId = e.RewardId,

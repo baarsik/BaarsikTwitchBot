@@ -64,12 +64,12 @@ namespace BaarsikTwitchBot
                 }
                 finally
                 {
-                    Program.Log("Closing the bot");
+                    Program.Log("Closing the bot. Press any key to continue...");
                 }
             }
             else
             {
-                Program.Log("Failed to run the bot", LogLevel.Error);
+                Program.Log("Failed to run the bot. Press any key to continue...", LogLevel.Error);
                 Console.ReadKey();
             }
         }

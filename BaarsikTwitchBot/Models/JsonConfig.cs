@@ -35,6 +35,8 @@ namespace BaarsikTwitchBot.Models
             public string RewardTitlePlus { get; set; } = "Song Request+";
             public int MaximumLengthInSeconds { get; set; } = 360;
             public bool DisplaySongName { get; set; } = true;
+            public bool AllowDuplicatesDefault { get; set; } = false;
+            public bool AllowDuplicatesPlus { get; set; } = true;
         }
     }
 }
