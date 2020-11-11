@@ -77,7 +77,7 @@ namespace BaarsikTwitchBot
         [VMProtect.BeginVirtualization]
         private static void ConfigureServices(IServiceCollection services)
         {
-            var config = JsonConvert.DeserializeObject<JsonConfig>(File.ReadAllText("./config/config.json"));
+            var config = GetConfig();
 
             if (!VMProtect.SDK.IsValidImageCRC())
             {
@@ -147,6 +147,30 @@ namespace BaarsikTwitchBot
             ServiceProvider = services.BuildServiceProvider();
 
             IsSuccessful = true;
+        }
+
+        [VMProtect.BeginVirtualization]
+        private static JsonConfig GetConfig()
+        {
+            const string path = "./config/";
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+
+            var fileName = $"{path}config.json";
+            var config = new JsonConfig();
+            if (File.Exists(fileName))
+            {
+                config = JsonConvert.DeserializeObject<JsonConfig>(File.ReadAllText(fileName));
+            }
+            else
+            {
+                var fileContent = JsonConvert.SerializeObject(config, Formatting.Indented);
+                File.WriteAllText(fileName, fileContent);
+                Program.Log("Config file not found. Creating default file. Please update it manually", LogLevel.Critical);
+            }
+            return config;
         }
 
         #region Log

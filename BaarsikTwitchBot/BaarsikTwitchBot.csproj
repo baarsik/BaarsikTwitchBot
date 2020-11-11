@@ -12,6 +12,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="3.1.9">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -43,9 +44,5 @@
       <HintPath>References\VMProtect.SDK.dll</HintPath>
     </Reference>
   </ItemGroup>
-
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="if not exist $(TargetDir)config mkdir $(TargetDir)config&#xD;&#xA;if not exist $(TargetDir)config\config.json copy $(SolutionDir)BaarsikTwitchBot\config.json $(TargetDir)config\config.json&#xD;&#xA;if not exist $(TargetDir)music mkdir $(TargetDir)music" />
-  </Target>
 
 </Project>
