@@ -3,6 +3,7 @@ using BaarsikTwitchBot.Domain.Enums;
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -34,7 +35,11 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
 
             var request = _songPlayerHandler.CurrentRequest;
             await _songPlayerHandler.LimitSongAsync(SongLimitationType.Plus);
-            _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} перевел трек '{request.YoutubeVideo.Title}' в награду '{_config.SongRequestManager.RewardTitlePlus}'");
+
+            var textTemplate = _config.SongRequestManager.DisplaySongName
+                ? SongRequestResources.LimitSongChatHook_Success_SongName
+                : SongRequestResources.LimitSongChatHook_Success_NoSongName;
+            _client.SendMessage(chatMessage.Channel, string.Format(textTemplate, chatMessage.Username, request.YoutubeVideo.Title, request.User.DisplayName));
         }
     }
 }

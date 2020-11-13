@@ -2,6 +2,7 @@
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -11,11 +12,13 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
     {
         private readonly TwitchClient _client;
         private readonly SongPlayerHandler _songPlayerHandler;
+        private readonly JsonConfig _config;
 
-        public BanSongChatHook(TwitchClient client, SongPlayerHandler songPlayerHandler)
+        public BanSongChatHook(TwitchClient client, SongPlayerHandler songPlayerHandler, JsonConfig config)
         {
             _client = client;
             _songPlayerHandler = songPlayerHandler;
+            _config = config;
         }
 
         public bool IsEnabled => true;
@@ -31,7 +34,11 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
 
             var request = _songPlayerHandler.CurrentRequest;
             await _songPlayerHandler.BanCurrentSongAsync();
-            _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} забанил трек '{request.YoutubeVideo.Title}' от @{request.User.DisplayName}");
+
+            var textTemplate = _config.SongRequestManager.DisplaySongName
+                ? SongRequestResources.BanSongChatHook_Banned_SongName
+                : SongRequestResources.BanSongChatHook_Banned_NoSongName;
+            _client.SendMessage(chatMessage.Channel, string.Format(textTemplate, chatMessage.Username, request.YoutubeVideo.Title, request.User.DisplayName));
         }
     }
 }

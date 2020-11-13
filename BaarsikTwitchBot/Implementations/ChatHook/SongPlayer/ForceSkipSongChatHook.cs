@@ -2,6 +2,7 @@
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -34,10 +35,10 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
             var request = _songPlayerHandler.CurrentRequest;
             _songPlayerHandler.IsSkipping = true;
 
-            var text = _config.SongRequestManager.DisplaySongName
-                ? $"{chatMessage.Username} принудительно скипнул трек '{request.YoutubeVideo.Title}' от @{request.User.DisplayName}"
-                : $"{chatMessage.Username} принудительно скипнул трек от @{request.User.DisplayName}";
-            _client.SendMessage(chatMessage.Channel, text);
+            var textTemplate = _config.SongRequestManager.DisplaySongName
+                ? SongRequestResources.ForceSkipSongChatHook_Skipped_SongName
+                : SongRequestResources.ForceSkipSongChatHook_Skipped_NoSongName;
+            _client.SendMessage(chatMessage.Channel, string.Format(textTemplate, chatMessage.Username, request.YoutubeVideo.Title, request.User.DisplayName));
         }
     }
 }

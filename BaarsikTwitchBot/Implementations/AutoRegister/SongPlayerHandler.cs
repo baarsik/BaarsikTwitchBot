@@ -7,6 +7,7 @@ using BaarsikTwitchBot.Domain.Enums;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using NAudio.Wave;
 using TwitchLib.Client;
 using TwitchLib.PubSub.Events;
@@ -110,7 +111,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             {
                 if (ex is VideoUnplayableException || ex is ArgumentException)
                 {
-                    _client.SendMessage(_config.Channel.Name, $"@{e.DisplayName}, видео по данному заказу не найдено");
+                    _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Reward_VideoNotFound, e.DisplayName));
                     return;
                 }
                 throw;
@@ -118,7 +119,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
 
             if (Math.Abs(video.Duration.TotalMilliseconds) < 0.000001)
             {
-                _client.SendMessage(_config.Channel.Name, $"@{e.DisplayName}, стрим не поддерживается");
+                _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Reward_StreamNotSupported, e.DisplayName));
                 return;
             }
 
@@ -126,8 +127,9 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             {
                 var minutes = _config.SongRequestManager.MaximumLengthInSeconds / 60;
                 var seconds = _config.SongRequestManager.MaximumLengthInSeconds % 60;
-                var actualLengthString = $"{(video.Duration.Hours > 0 ? $"{video.Duration.Hours:00}:" : string.Empty)}{video.Duration.Minutes:00}:{video.Duration.Seconds:00}";
-                _client.SendMessage(_config.Channel.Name, $"@{e.DisplayName}, видео длительностью более {minutes:00}:{seconds:00} ({actualLengthString})");
+                var maxDuration = $"{minutes:00}:{seconds:00}";
+                var actualDuration = $"{(video.Duration.Hours > 0 ? $"{video.Duration.Hours:00}:" : string.Empty)}{video.Duration.Minutes:00}:{video.Duration.Seconds:00}";
+                _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Reward_MaxDurationExceeded, e.DisplayName, maxDuration, actualDuration));
                 return;
             }
 
@@ -135,12 +137,11 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             switch (songInfo.Limitation)
             {
                 case SongLimitationType.Banned:
-                    _client.SendMessage(_config.Channel.Name, $"@{e.DisplayName}, данная песня запрещена к заказу стримером");
+                    _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Reward_SongIsBanned, e.DisplayName));
                     return;
                 case SongLimitationType.Plus when requestType != SongRequestType.Plus:
-                    _client.SendMessage(_config.Channel.Name, _config.SongRequestManager.DisplaySongName
-                        ? $"@{e.DisplayName}, песня '{video.Title}' может быть заказана только наградой '{_config.SongRequestManager.RewardTitlePlus}'"
-                        : $"@{e.DisplayName}, данная песня может быть заказана только наградой '{_config.SongRequestManager.RewardTitlePlus}'");
+                    var responseTemplate = _config.SongRequestManager.DisplaySongName ? SongRequestResources.Reward_RequestInPlusOnly_SongName : SongRequestResources.Reward_RequestInPlusOnly_NoSongName;
+                    _client.SendMessage(_config.Channel.Name, string.Format(responseTemplate, e.DisplayName, video.Title));
                     return;
             }
 
@@ -150,9 +151,8 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 {
                     case SongRequestType.Default when !_config.SongRequestManager.AllowDuplicatesDefault:
                     case SongRequestType.Plus when !_config.SongRequestManager.AllowDuplicatesPlus:
-                        _client.SendMessage(_config.Channel.Name, _config.SongRequestManager.DisplaySongName
-                            ? $"@{e.DisplayName}, песня '{video.Title}' уже находится в очереди"
-                            : $"@{e.DisplayName}, данная песня уже находится в очереди");
+                        var responseTemplate = _config.SongRequestManager.DisplaySongName ? SongRequestResources.Reward_SongInQueue_SongName : SongRequestResources.Reward_SongInQueue_NoSongName;
+                        _client.SendMessage(_config.Channel.Name, string.Format(responseTemplate, e.DisplayName, video.Title));
                         break;
                 }
             }
@@ -168,9 +168,8 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             _requestQueue.Add(songRequest);
             Play();
 
-            _client.SendMessage(_config.Channel.Name,  _config.SongRequestManager.DisplaySongName
-                ? $"Добавлена песня '{songRequest.YoutubeVideo.Title}' от @{songRequest.User.DisplayName} (#{_requestQueue.Count})"
-                : $"Добавлена песня от @{songRequest.User.DisplayName} (#{_requestQueue.Count})");
+            var textTemplate = _config.SongRequestManager.DisplaySongName ? SongRequestResources.Reward_SongAdded_SongName : SongRequestResources.Reward_SongAdded_NoSongName;
+            _client.SendMessage(_config.Channel.Name,  string.Format(textTemplate, songRequest.YoutubeVideo.Title, songRequest.User.DisplayName, _requestQueue.Count));
         }
 
         [VMProtect.BeginVirtualization]
@@ -202,7 +201,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 
                 if (_config.SongRequestManager.DisplaySongName)
                 {
-                    _client.SendMessage(_config.Channel.Name, $"Сейчас играет: '{queueItem.YoutubeVideo.Title}' от @{queueItem.User.DisplayName}");
+                    _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Announce_CurrentSong, queueItem.YoutubeVideo.Title, queueItem.User.DisplayName));
                 }
 
                 while (waveOut.PlaybackState == PlaybackState.Playing || waveOut.PlaybackState == PlaybackState.Paused)

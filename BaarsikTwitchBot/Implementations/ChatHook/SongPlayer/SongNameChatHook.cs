@@ -2,6 +2,7 @@
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -31,17 +32,17 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
             var request = _songPlayerHandler.CurrentRequest;
             if (!_songPlayerHandler.IsPlaying || request == null)
             {
-                _client.SendMessage(chatMessage.Channel, "На данный момент нет заказанных треков");
+                _client.SendMessage(chatMessage.Channel,  SongRequestResources.SongNameChatHook_NoRequests);
                 return;
             }
 
             if (_songPlayerHandler.IsPaused)
             {
-                _client.SendMessage(chatMessage.Channel, "В текущий момент музыка на паузе");
+                _client.SendMessage(chatMessage.Channel, SongRequestResources.SongNameChatHook_Paused);
                 return;
             }
 
-            _client.SendMessage(chatMessage.Channel, $"Играет трек '{request.YoutubeVideo.Title}' от @{request.User.DisplayName}");
+            _client.SendMessage(chatMessage.Channel, string.Format(SongRequestResources.SongNameChatHook_Playing, request.YoutubeVideo.Title, request.User.DisplayName));
         }
     }
 }
