@@ -21,7 +21,8 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
             _config = config;
         }
 
-        public bool IsEnabled => _config.SongRequestManager.DisplaySongName;
+        public bool IsEnabled => _config.SongRequestManager.Enabled
+                                 && _config.SongRequestManager.DisplaySongName;
 
         public ChatHookAccessType Access => ChatHookAccessType.Everyone;
 

@@ -52,6 +52,9 @@ namespace BaarsikTwitchBot.Models
 
         public class SongRequestManagerSettings
         {
+            [JsonProperty("Enabled")]
+            public bool Enabled { get; set; } = true;
+
             [JsonProperty("RewardTitleDefault")]
             public string RewardTitleDefault { get; set; } = "Song Request";
 

@@ -85,7 +85,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
         [VMProtect.BeginVirtualization]
         private async void OnRewardRedeemed(object sender, OnRewardRedeemedArgs e)
         {
-            if (!IsInitialized) return;
+            if (!IsInitialized || !_config.SongRequestManager.Enabled) return;
 
             var requestType = e.RewardTitle == _config.SongRequestManager.RewardTitlePlus
                 ? SongRequestType.Plus

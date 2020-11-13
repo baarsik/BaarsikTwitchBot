@@ -22,7 +22,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
             _config = config;
         }
 
-        public bool IsEnabled => true;
+        public bool IsEnabled => _config.SongRequestManager.Enabled;
 
         public ChatHookAccessType Access => ChatHookAccessType.Broadcaster;
 
