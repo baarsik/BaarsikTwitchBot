@@ -61,7 +61,7 @@ namespace BaarsikTwitchBot.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Пользователь {user.DisplayName} забанен и больше не может пользоваться ботом.
+        ///   Ищет локализованную строку, похожую на Пользователь {0} забанен и больше не может пользоваться ботом.
         /// </summary>
         internal static string BanUserChatHook_Banned {
             get {

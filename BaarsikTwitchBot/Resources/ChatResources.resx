@@ -118,7 +118,7 @@
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
   <data name="BanUserChatHook_Banned" xml:space="preserve">
-    <value>Пользователь {user.DisplayName} забанен и больше не может пользоваться ботом</value>
+    <value>Пользователь {0} забанен и больше не может пользоваться ботом</value>
   </data>
   <data name="GetViewersChatHook_Text" xml:space="preserve">
     <value>Зрители ({0}): {1}</value>
