@@ -2,6 +2,7 @@
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -38,7 +39,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
                 return;
 
             await _dbHelper.BanUserAsync(user);
-            _client.SendMessage(chatMessage.Channel, $"Пользователь {user.DisplayName} забанен и больше не может пользоваться ботом");
+            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.BanUserChatHook_Banned, user.DisplayName));
         }
     }
 }

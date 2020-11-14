@@ -3,6 +3,7 @@ using System.Linq;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -27,7 +28,9 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
 
         public void OnMessageReceived(ChatMessage chatMessage, IList<string> parameters)
         {
-            _client.SendMessage(chatMessage.Channel, $"Зрители ({_apiHelper.CurrentViewers.Count}): {string.Join(", ", _apiHelper.CurrentViewers.Select(x => x.DisplayName))}");
+            var viewerNames = string.Join(", ", _apiHelper.CurrentViewers.Select(x => x.DisplayName));
+            var viewerCount = _apiHelper.CurrentViewers.Count;
+            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.GetViewersChatHook_Text, viewerCount, viewerNames));
         }
     }
 }

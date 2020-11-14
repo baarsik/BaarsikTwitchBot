@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -23,7 +24,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
 
         public void OnMessageReceived(ChatMessage chatMessage, IList<string> parameters)
         {
-            _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} теперь смотрит стрим на фоне");
+            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.LurkChatHook_Lurking, chatMessage.Username));
         }
     }
 }

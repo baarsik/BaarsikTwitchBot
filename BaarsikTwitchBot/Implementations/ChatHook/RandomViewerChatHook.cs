@@ -2,6 +2,7 @@
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -28,7 +29,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
         {
             var randomViewer = _apiHelper.GetRandomViewer();
             var chance = 100 / _apiHelper.CurrentViewers.Count;
-            _client.SendMessage(chatMessage.Channel, $"Случайный зритель: {randomViewer.DisplayName} - {chance}%");
+            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.RandomViewerChatHook_Text, randomViewer.DisplayName, chance));
         }
     }
 }

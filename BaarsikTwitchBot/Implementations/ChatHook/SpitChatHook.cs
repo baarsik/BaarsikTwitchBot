@@ -3,6 +3,7 @@ using BaarsikTwitchBot.Domain.Models;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
 using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
@@ -12,12 +13,14 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
     {
         private readonly TwitchClient _client;
         private readonly TwitchApiHelper _apiHelper;
+        private readonly JsonConfig _config;
         private readonly DbHelper _dbHelper;
 
-        public SpitChatHook(TwitchClient client, TwitchApiHelper apiHelper, DbHelper dbHelper)
+        public SpitChatHook(TwitchClient client, TwitchApiHelper apiHelper, JsonConfig config, DbHelper dbHelper)
         {
             _client = client;
             _apiHelper = apiHelper;
+            _config = config;
             _dbHelper = dbHelper;
         }
 
@@ -34,8 +37,8 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
                 return;
 
             var message = chatMessage.UserId == user.UserId
-                ? $"{chatMessage.Username} плюет себе в лицо LUL"
-                : $"{chatMessage.Username} плюет в {user.DisplayName}";
+                ? string.Format(ChatResources.SpitChatHook_SelfSpit, chatMessage.Username, _config.TwitchEmotes.LUL)
+                : string.Format(ChatResources.SpitChatHook_Spit, chatMessage.Username, user.DisplayName);
 
             _client.SendMessage(chatMessage.Channel, message);
 

@@ -33,10 +33,10 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
             switch (percentage)
             {
                 case 0:
-                    _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}%, то есть никак LUL");
+                    _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}%, то есть никак {_config.TwitchEmotes.LUL}");
                     break;
                 case 100:
-                    _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}% - абсолютная любовь baarsiLove");
+                    _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}% - абсолютная любовь {_config.TwitchEmotes.Love}");
                     break;
                 default:
                     _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}%");

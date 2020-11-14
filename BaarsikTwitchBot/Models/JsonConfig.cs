@@ -17,6 +17,9 @@ namespace BaarsikTwitchBot.Models
         [JsonProperty("SongRequestManager")]
         public SongRequestManagerSettings SongRequestManager { get; set; } = new SongRequestManagerSettings();
 
+        [JsonProperty("TwitchEmotes")]
+        public TwitchEmoteSettings TwitchEmotes { get; set; } = new TwitchEmoteSettings();
+
         [JsonProperty("ConnectionString")]
         public string ConnectionString { get; set; } = "Server=localhost;Database=BaarsikTwitchBot;Trusted_Connection=True;Integrated Security=true;";
 
@@ -72,6 +75,21 @@ namespace BaarsikTwitchBot.Models
 
             [JsonProperty("AllowDuplicatesPlus")] 
             public bool AllowDuplicatesPlus { get; set; } = true;
+        }
+
+        public class TwitchEmoteSettings
+        {
+            [JsonProperty("LUL")]
+            public string LUL { get; set; } = "LUL";
+
+            [JsonProperty("Love")]
+            public string Love { get; set; } = "baarsiLove";
+
+            [JsonProperty("Gasm")]
+            public string Gasm { get; set; } = "baarsiGasm";
+
+            [JsonProperty("PogChamp")]
+            public string PogChamp { get; set; } = "PogChamp";
         }
     }
 }

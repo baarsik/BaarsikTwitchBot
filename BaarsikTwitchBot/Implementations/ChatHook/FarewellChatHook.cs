@@ -27,11 +27,11 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
         {
             if (parameters.Count == 0 || _config.Chat.DisableUnsafeCommands)
             {
-                _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} уже уходит. Приятного времени суток baarsiLove");
+                _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} уже уходит. Приятного времени суток {_config.TwitchEmotes.Love}");
             }
             else
             {
-                _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} уходит {string.Join(' ', parameters)}. Будем ждать возвращения baarsiLove");
+                _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} уходит {string.Join(' ', parameters)}. Будем ждать возвращения {_config.TwitchEmotes.Love}");
             }
         }
     }
