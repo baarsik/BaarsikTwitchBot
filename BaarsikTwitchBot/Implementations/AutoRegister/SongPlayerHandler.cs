@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using BaarsikTwitchBot.Domain.Enums;
 using BaarsikTwitchBot.Helpers;
@@ -43,7 +44,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
         public SongRequest CurrentRequest => _requestQueue.FirstOrDefault();
         public bool IsPlayerActive => IsInitialized && IsPlaying && !IsSkipping && CurrentRequest != null;
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         public void Initialize()
         {
             if (IsInitialized)
@@ -66,7 +67,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             IsInitialized = true;
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         public async Task BanCurrentSongAsync()
         {
             if (!IsPlayerActive)
@@ -76,13 +77,13 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             IsSkipping = true;
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         public async Task LimitSongAsync(SongLimitationType limitType)
         {
             await _dbHelper.UpdateSongInfoAsync(CurrentRequest.YoutubeVideo.Id, limitType);
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private async void OnRewardRedeemed(object sender, OnRewardRedeemedArgs e)
         {
             if (!IsInitialized || !_config.SongRequestManager.Enabled) return;
@@ -172,7 +173,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             _client.SendMessage(_config.Channel.Name,  string.Format(textTemplate, songRequest.YoutubeVideo.Title, songRequest.User.DisplayName, _requestQueue.Count));
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private async void Play()
         {
             if (IsPlaying)
@@ -241,7 +242,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             Play();
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private async Task<string> GetMp3FileNameAsync(VideoId videoId)
         {
             var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(videoId);

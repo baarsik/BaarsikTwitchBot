@@ -74,7 +74,7 @@ namespace BaarsikTwitchBot
             }
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private static void ConfigureServices(IServiceCollection services)
         {
             var config = GetConfig();
@@ -149,7 +149,7 @@ namespace BaarsikTwitchBot
             IsSuccessful = true;
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private static JsonConfig GetConfig()
         {
             const string path = "./config/";

@@ -31,7 +31,7 @@ namespace BaarsikTwitchBot.Controllers
             InitAutoRegisteredClasses();
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
         {
             if (!e.ChatMessage.Message.StartsWith('!')) return;
@@ -95,7 +95,7 @@ namespace BaarsikTwitchBot.Controllers
 
         #region Initialization
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void InitTwitchClient()
         {
             _twitchClient.OnConnected += (sender, args) => Program.Log($"Connected to '{args.AutoJoinChannel}' chat as '{args.BotUsername}'");
@@ -114,7 +114,7 @@ namespace BaarsikTwitchBot.Controllers
             _twitchClient.Connect();
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void InitChatHooks()
         {
             var chatHooks = Assembly.GetExecutingAssembly().GetTypes()
@@ -123,7 +123,7 @@ namespace BaarsikTwitchBot.Controllers
             this.Hook(chatHooks);
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void InitAutoRegisteredClasses()
         {
             var autoRegisteredClasses = Assembly.GetExecutingAssembly().GetTypes()

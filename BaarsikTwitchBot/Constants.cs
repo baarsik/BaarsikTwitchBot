@@ -17,5 +17,15 @@
         {
             public const int FollowerRequestLimit = 100;
         }
+
+        public static class Obfuscation
+        {
+            public const string Mutation = "mutation";
+            public const string Virtualization = "virtualization";
+            public const string Ultra = "ultra";
+            public const string Virtualizationlockbykey = "virtualizationlockbykey";
+            public const string Ultralockbykey = "ultralockbykey";
+            public const string Renaming = "renaming";
+        }
     }
 }

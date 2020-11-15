@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
 using BaarsikTwitchBot.Domain.Models;
@@ -112,7 +113,7 @@ namespace BaarsikTwitchBot.Helpers
             return BotUsers.FirstOrDefault(x => x.UserId == userId);
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private async Task UpdateFollowerList()
         {
             if (StreamerUser == null)
@@ -146,7 +147,7 @@ namespace BaarsikTwitchBot.Helpers
             Program.Log($"Loaded followers list for channel '{StreamerUser.Login}', total followers: {followers.Count}, total bot users: {BotUsers.Count}");
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private async void ViewersUpdateTimerTick()
         {
             var client = new HttpClient();
@@ -174,7 +175,7 @@ namespace BaarsikTwitchBot.Helpers
         }
 
         #region PubSub
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private async void PubSubOnChannelFollow(object sender, OnFollowArgs e)
         {
             var userResponse = await _twitchApi.Helix.Users.GetUsersAsync(ids: new List<string> { e.UserId });
@@ -191,7 +192,7 @@ namespace BaarsikTwitchBot.Helpers
             OnFollow?.Invoke(sender, user);
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void PubSubOnChannelSubscription(object sender, OnChannelSubscriptionArgs e)
         {
             var isBanned = BotUsers.Where(x => x.UserId == e.Subscription.UserId).Select(x => x.IsBanned).FirstOrDefault();
@@ -204,7 +205,7 @@ namespace BaarsikTwitchBot.Helpers
             OnChannelSubscription?.Invoke(sender, e);
         }
 
-        [VMProtect.BeginVirtualization]
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void PubSubOnChannelRewardRedeemed(object sender, OnRewardRedeemedArgs e)
         {
             if (e.Status != Constants.RewardStatus.Unfulfilled)

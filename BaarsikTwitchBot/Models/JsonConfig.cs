@@ -1,94 +1,94 @@
 ﻿using System.Collections.Generic;
-using Newtonsoft.Json;
+using System.Reflection;
 
 namespace BaarsikTwitchBot.Models
 {
     public class JsonConfig
     {
-        [JsonProperty("Channel")]
+        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public ChannelCredentials Channel { get; set; } = new ChannelCredentials();
 
-        [JsonProperty("OAuth")]
+        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public OAuthCredentials OAuth { get; set; } = new OAuthCredentials();
 
-        [JsonProperty("Chat")]
+        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public ChatSettings Chat { get; set; } = new ChatSettings();
 
-        [JsonProperty("SongRequestManager")]
+        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public SongRequestManagerSettings SongRequestManager { get; set; } = new SongRequestManagerSettings();
 
-        [JsonProperty("TwitchEmotes")]
+        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public TwitchEmoteSettings TwitchEmotes { get; set; } = new TwitchEmoteSettings();
 
-        [JsonProperty("ConnectionString")]
+        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public string ConnectionString { get; set; } = "Server=localhost;Database=BaarsikTwitchBot;Trusted_Connection=True;Integrated Security=true;";
 
         public class ChannelCredentials
         {
-            [JsonProperty("Name")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string Name { get; set; } = Constants.User.ChannelName;
 
-            [JsonProperty("OAuth")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string OAuth { get; set; } = string.Empty;
         }
 
         public class OAuthCredentials
         {
-            [JsonProperty("ClientID")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string ClientID { get; set; } = string.Empty;
 
-            [JsonProperty("ClientSecret")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string ClientSecret { get; set; } = string.Empty;
 
-            [JsonProperty("Scopes")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string Scopes { get; set; } = "bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:moderate chat:edit channel:moderate whispers:edit channel_subscriptions chat:read whispers:read";
         }
 
         public class ChatSettings
         {
-            [JsonProperty("DisableUnsafeCommands")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public bool DisableUnsafeCommands { get; set; } = false;
 
-            [JsonProperty("UsersToIgnore")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public ICollection<string> UsersToIgnore { get; set; } = new List<string>();
         }
 
         public class SongRequestManagerSettings
         {
-            [JsonProperty("Enabled")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public bool Enabled { get; set; } = true;
 
-            [JsonProperty("RewardTitleDefault")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string RewardTitleDefault { get; set; } = "Song Request";
 
-            [JsonProperty("RewardTitlePlus")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string RewardTitlePlus { get; set; } = "Song Request+";
 
-            [JsonProperty("MaximumLengthInSeconds")] 
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)] 
             public int MaximumLengthInSeconds { get; set; } = 360;
 
-            [JsonProperty("DisplaySongName")] 
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)] 
             public bool DisplaySongName { get; set; } = true;
 
-            [JsonProperty("AllowDuplicatesDefault")] 
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)] 
             public bool AllowDuplicatesDefault { get; set; } = false;
 
-            [JsonProperty("AllowDuplicatesPlus")] 
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)] 
             public bool AllowDuplicatesPlus { get; set; } = true;
         }
 
         public class TwitchEmoteSettings
         {
-            [JsonProperty("LUL")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string LUL { get; set; } = "LUL";
 
-            [JsonProperty("Love")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string Love { get; set; } = "baarsiLove";
 
-            [JsonProperty("Gasm")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string Gasm { get; set; } = "baarsiGasm";
 
-            [JsonProperty("PogChamp")]
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string PogChamp { get; set; } = "PogChamp";
         }
     }
