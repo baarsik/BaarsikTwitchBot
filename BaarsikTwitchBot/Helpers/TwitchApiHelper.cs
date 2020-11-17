@@ -90,6 +90,14 @@ namespace BaarsikTwitchBot.Helpers
                 : null;
         }
 
+        public BotUser GetRandomViewer(string excludeUserId)
+        {
+            var applicableViewers = CurrentViewers.Where(x => x.UserId != excludeUserId).ToList();
+            return applicableViewers.Any()
+                ? applicableViewers[_random.Next(applicableViewers.Count)]
+                : null;
+        }
+
         public BotUser GetFollowerByName(string name)
         {
             return BotUsers.FirstOrDefault(f => string.Equals(f.DisplayName, name, StringComparison.CurrentCultureIgnoreCase));

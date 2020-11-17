@@ -113,5 +113,14 @@ namespace BaarsikTwitchBot.Resources {
                 return ResourceManager.GetString("SpitChatHook_Spit", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на {0} присунул {1} своего удава длиной {2:0.#} см.
+        /// </summary>
+        internal static string StickInChatHook_Banged {
+            get {
+                return ResourceManager.GetString("StickInChatHook_Banged", resourceCulture);
+            }
+        }
     }
 }

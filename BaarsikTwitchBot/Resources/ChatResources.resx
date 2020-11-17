@@ -135,4 +135,7 @@
   <data name="SpitChatHook_Spit" xml:space="preserve">
     <value>{0} плюет в {1}</value>
   </data>
+  <data name="StickInChatHook_Banged" xml:space="preserve">
+    <value>{0} присунул {1} своего удава длиной {2:0.#} см</value>
+  </data>
 </root>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Reflection;
 using BaarsikTwitchBot.Controllers;
 using BaarsikTwitchBot.Domain;
+using BaarsikTwitchBot.Extensions;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;

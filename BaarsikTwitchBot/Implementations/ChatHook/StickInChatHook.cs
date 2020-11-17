@@ -1,0 +1,54 @@
+﻿using System;
+using System.Collections.Generic;
+using BaarsikTwitchBot.Domain.Models;
+using BaarsikTwitchBot.Extensions;
+using BaarsikTwitchBot.Helpers;
+using BaarsikTwitchBot.Interfaces;
+using BaarsikTwitchBot.Models;
+using BaarsikTwitchBot.Resources;
+using TwitchLib.Client;
+using TwitchLib.Client.Models;
+
+namespace BaarsikTwitchBot.Implementations.ChatHook
+{
+    public class StickInChatHook : IChatHook
+    {
+        private readonly TwitchClient _client;
+        private readonly TwitchApiHelper _apiHelper;
+        private readonly Random _random;
+
+        public StickInChatHook(TwitchClient client, TwitchApiHelper apiHelper)
+        {
+            _client = client;
+            _apiHelper = apiHelper;
+            _random = new Random();
+        }
+
+        public bool IsEnabled => true;
+
+        public ChatHookAccessType Access => ChatHookAccessType.Everyone;
+
+        public IList<string> CommandNames { get; } = new List<string> {"присунуть", "stickin", "bang"};
+
+        public void OnMessageReceived(ChatMessage chatMessage, IList<string> parameters)
+        {
+            var user = GetTargetUser(chatMessage.UserId, parameters);
+            if (user == null)
+                return;
+
+            var length = _random.NextGaussian(13.2d, 2.7d);
+            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.StickInChatHook_Banged, chatMessage.Username, user.DisplayName, length));
+        }
+
+        private BotUser GetTargetUser(string callingUserId, IList<string> parameters)
+        {
+            if (parameters.Count == 1)
+            {
+                var userName = parameters[0].Replace("@", "");
+                return _apiHelper.GetFollowerByName(userName);
+            }
+
+            return _apiHelper.GetRandomViewer(callingUserId);
+        }
+    }
+}
