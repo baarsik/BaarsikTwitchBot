@@ -45,7 +45,11 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
             if (parameters.Count == 1)
             {
                 var userName = parameters[0].Replace("@", "");
-                return _apiHelper.GetFollowerByName(userName);
+                var user = _apiHelper.GetFollowerByName(userName);
+                if (user == null || user.UserId != callingUserId)
+                {
+                    return user;
+                }
             }
 
             return _apiHelper.GetRandomViewer(callingUserId);
