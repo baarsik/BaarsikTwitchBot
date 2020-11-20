@@ -50,19 +50,6 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             if (IsInitialized)
                 return;
 
-            if (!Directory.Exists("./music"))
-            {
-                Directory.CreateDirectory("./music");
-            }
-            else
-            {
-                var files = Directory.GetFiles("./music");
-                foreach (var file in files)
-                {
-                    File.Delete(file);
-                }
-            }
-
             _twitchApi.OnRewardRedeemed += OnRewardRedeemed;
             IsInitialized = true;
         }
@@ -154,7 +141,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                     case SongRequestType.Plus when !_config.SongRequestManager.AllowDuplicatesPlus:
                         var responseTemplate = _config.SongRequestManager.DisplaySongName ? SongRequestResources.Reward_SongInQueue_SongName : SongRequestResources.Reward_SongInQueue_NoSongName;
                         _client.SendMessage(_config.Channel.Name, string.Format(responseTemplate, e.DisplayName, video.Title));
-                        break;
+                        return;
                 }
             }
 
@@ -189,74 +176,55 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             IsPaused = false;
 
             var queueItem = _requestQueue.First();
-            var mp3FileName = await GetMp3FileNameAsync(queueItem.YoutubeVideo.Id);
+            var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(queueItem.YoutubeVideo.Id);
+            var audioFileUrl = streamManifest.GetAudioOnly().WithHighestBitrate().Url;
 
-            await using (var reader = new Mp3FileReader(mp3FileName))
+            await using var reader = new MediaFoundationReader(audioFileUrl);
+            using var waveOut = new WaveOutEvent
             {
-                using var waveOut = new WaveOutEvent()
-                {
-                    Volume = 0.07f
-                };
-                waveOut.Init(reader);
-                waveOut.Play();
-                
-                if (_config.SongRequestManager.DisplaySongName)
-                {
-                    _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Announce_CurrentSong, queueItem.YoutubeVideo.Title, queueItem.User.DisplayName));
-                }
+                Volume = 0.07f
+            };
+            waveOut.Init(reader);
+            waveOut.Play();
 
-                while (waveOut.PlaybackState == PlaybackState.Playing || waveOut.PlaybackState == PlaybackState.Paused)
-                {
-                    switch (waveOut.PlaybackState)
-                    {
-                        case PlaybackState.Playing:
-                            if (IsSkipping)
-                            {
-                                waveOut.Stop();
-                                IsSkipping = false;
-                                IsPaused = false;
-                            }
-                            else if (IsPaused)
-                            {
-                                waveOut.Pause();
-                            }
-                            break;
-                        case PlaybackState.Paused:
-                            if (!IsPaused)
-                            {
-                                waveOut.Play();
-                            }
-                            break;
-                        case PlaybackState.Stopped:
-                            break;
-                        default: throw new ArgumentOutOfRangeException(nameof(waveOut.PlaybackState));
-                    }
-                    System.Threading.Thread.Sleep(100);
-                }
+            if (_config.SongRequestManager.DisplaySongName)
+            {
+                _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Announce_CurrentSong, queueItem.YoutubeVideo.Title, queueItem.User.DisplayName));
             }
-            File.Delete(mp3FileName);
+
+            while (waveOut.PlaybackState == PlaybackState.Playing || waveOut.PlaybackState == PlaybackState.Paused)
+            {
+                switch (waveOut.PlaybackState)
+                {
+                    case PlaybackState.Playing:
+                        if (IsSkipping)
+                        {
+                            waveOut.Stop();
+                            IsSkipping = false;
+                            IsPaused = false;
+                        }
+                        else if (IsPaused)
+                        {
+                            waveOut.Pause();
+                        }
+                        break;
+                    case PlaybackState.Paused:
+                        if (!IsPaused)
+                        {
+                            waveOut.Play();
+                        }
+                        break;
+                    case PlaybackState.Stopped:
+                        break;
+                    default: throw new ArgumentOutOfRangeException(nameof(waveOut.PlaybackState));
+                }
+                System.Threading.Thread.Sleep(100);
+            }
 
             _requestQueue.RemoveAt(0);
             IsPlaying = false;
             IsPaused = false;
             Play();
-        }
-
-        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
-        private async Task<string> GetMp3FileNameAsync(VideoId videoId)
-        {
-            var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(videoId);
-            var streamInfo = streamManifest.GetMuxed().WithHighestBitrate();
-            if (streamInfo == null)
-                return null;
-
-            await using var memoryStream = new MemoryStream();
-            await _youtubeClient.Videos.Streams.CopyToAsync(streamInfo, memoryStream);
-
-            var mp3FileName = $"./music/{videoId}.mp3";
-            await using var mfReader = new StreamMediaFoundationReader(memoryStream);
-            MediaFoundationEncoder.EncodeToMp3(mfReader, mp3FileName);
-            return mp3FileName;
         }
     }
 }
