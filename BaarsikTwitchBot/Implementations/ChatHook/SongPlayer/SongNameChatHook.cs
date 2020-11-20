@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
+using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Resources;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
 {
     public class SongNameChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly SongPlayerHandler _songPlayerHandler;
         private readonly JsonConfig _config;
 
-        public SongNameChatHook(TwitchClient client, SongPlayerHandler songPlayerHandler, JsonConfig config)
+        public SongNameChatHook(TwitchClientHelper clientHelper, SongPlayerHandler songPlayerHandler, JsonConfig config)
         {
-            _client = client;
+            _clientHelper = clientHelper;
             _songPlayerHandler = songPlayerHandler;
             _config = config;
         }
@@ -33,17 +33,17 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
             var request = _songPlayerHandler.CurrentRequest;
             if (!_songPlayerHandler.IsPlaying || request == null)
             {
-                _client.SendMessage(chatMessage.Channel,  SongRequestResources.SongNameChatHook_NoRequests);
+                _clientHelper.SendChannelMessage(SongRequestResources.SongNameChatHook_NoRequests);
                 return;
             }
 
             if (_songPlayerHandler.IsPaused)
             {
-                _client.SendMessage(chatMessage.Channel, SongRequestResources.SongNameChatHook_Paused);
+                _clientHelper.SendChannelMessage(SongRequestResources.SongNameChatHook_Paused);
                 return;
             }
 
-            _client.SendMessage(chatMessage.Channel, string.Format(SongRequestResources.SongNameChatHook_Playing, request.YoutubeVideo.Title, request.User.DisplayName));
+            _clientHelper.SendChannelMessage(SongRequestResources.SongNameChatHook_Playing, request.YoutubeVideo.Title, request.User.DisplayName);
         }
     }
 }

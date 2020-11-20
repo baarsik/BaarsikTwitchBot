@@ -3,20 +3,19 @@ using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Resources;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook
 {
     public class BanUserChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly TwitchApiHelper _apiHelper;
         private readonly DbHelper _dbHelper;
 
-        public BanUserChatHook(TwitchClient client, TwitchApiHelper apiHelper, DbHelper dbHelper)
+        public BanUserChatHook(TwitchClientHelper clientHelper, TwitchApiHelper apiHelper, DbHelper dbHelper)
         {
-            _client = client;
+            _clientHelper = clientHelper;
             _apiHelper = apiHelper;
             _dbHelper = dbHelper;
         }
@@ -39,7 +38,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
                 return;
 
             await _dbHelper.BanUserAsync(user);
-            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.BanUserChatHook_Banned, user.DisplayName));
+            _clientHelper.SendChannelMessage(ChatResources.BanUserChatHook_Banned, user.DisplayName);
         }
     }
 }

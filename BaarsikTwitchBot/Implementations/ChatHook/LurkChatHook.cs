@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
+using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Resources;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook
 {
     public class LurkChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
 
-        public LurkChatHook(TwitchClient client)
+        public LurkChatHook(TwitchClientHelper clientHelper)
         {
-            _client = client;
+            _clientHelper = clientHelper;
         }
 
         public bool IsEnabled => true;
@@ -24,7 +24,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
 
         public void OnMessageReceived(ChatMessage chatMessage, IList<string> parameters)
         {
-            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.LurkChatHook_Lurking, chatMessage.Username));
+            _clientHelper.SendChannelMessage(ChatResources.LurkChatHook_Lurking, chatMessage.Username);
         }
     }
 }

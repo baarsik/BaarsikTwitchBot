@@ -1,22 +1,22 @@
 ﻿using System.Collections.Generic;
+using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Resources;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
 {
     public class ForceSkipSongChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly SongPlayerHandler _songPlayerHandler;
         private readonly JsonConfig _config;
 
-        public ForceSkipSongChatHook(TwitchClient client, SongPlayerHandler songPlayerHandler, JsonConfig config)
+        public ForceSkipSongChatHook(TwitchClientHelper clientHelper, SongPlayerHandler songPlayerHandler, JsonConfig config)
         {
-            _client = client;
+            _clientHelper = clientHelper;
             _songPlayerHandler = songPlayerHandler;
             _config = config;
         }
@@ -38,7 +38,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
             var textTemplate = _config.SongRequestManager.DisplaySongName
                 ? SongRequestResources.ForceSkipSongChatHook_Skipped_SongName
                 : SongRequestResources.ForceSkipSongChatHook_Skipped_NoSongName;
-            _client.SendMessage(chatMessage.Channel, string.Format(textTemplate, chatMessage.Username, request.YoutubeVideo.Title, request.User.DisplayName));
+            _clientHelper.SendChannelMessage(textTemplate, chatMessage.Username, request.YoutubeVideo.Title, request.User.DisplayName);
         }
     }
 }

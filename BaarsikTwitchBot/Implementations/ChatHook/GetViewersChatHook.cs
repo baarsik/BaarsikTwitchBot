@@ -4,19 +4,18 @@ using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Resources;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook
 {
     public class GetViewersChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly TwitchApiHelper _apiHelper;
 
-        public GetViewersChatHook(TwitchClient client, TwitchApiHelper apiHelper)
+        public GetViewersChatHook(TwitchClientHelper clientHelper, TwitchApiHelper apiHelper)
         {
-            _client = client;
+            _clientHelper = clientHelper;
             _apiHelper = apiHelper;
         }
 
@@ -30,7 +29,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
         {
             var viewerNames = string.Join(", ", _apiHelper.CurrentViewers.Select(x => x.DisplayName));
             var viewerCount = _apiHelper.CurrentViewers.Count;
-            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.GetViewersChatHook_Text, viewerCount, viewerNames));
+            _clientHelper.SendChannelMessage(ChatResources.GetViewersChatHook_Text, viewerCount, viewerNames);
         }
     }
 }

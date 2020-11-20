@@ -120,7 +120,7 @@ namespace BaarsikTwitchBot
             };
             var webSocketClient = new WebSocketClient(clientOptions);
             var twitchClient = new TwitchClient(webSocketClient);
-            twitchClient.Initialize(credentials, config.Channel.Name);
+            twitchClient.Initialize(credentials, Constants.User.ChannelName);
 
             var twitchApi = new TwitchAPI
             {
@@ -140,6 +140,7 @@ namespace BaarsikTwitchBot
             services.AddSingleton(twitchClient);
             services.AddSingleton(twitchApi);
             services.AddSingleton<TwitchApiHelper>();
+            services.AddSingleton<TwitchClientHelper>();
             services.AddScoped<DbHelper>();
             autoRegisterClasses.ForEach(x => services.AddScoped(x));
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -10,7 +9,6 @@ using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Resources;
 using NAudio.Wave;
-using TwitchLib.Client;
 using TwitchLib.PubSub.Events;
 using YoutubeExplode;
 using YoutubeExplode.Exceptions;
@@ -23,16 +21,16 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
     {
         private readonly JsonConfig _config;
         private readonly TwitchApiHelper _twitchApi;
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly DbHelper _dbHelper;
         private readonly YoutubeClient _youtubeClient;
         private readonly List<SongRequest> _requestQueue = new List<SongRequest>();
 
-        public SongPlayerHandler(JsonConfig config, TwitchApiHelper twitchApi, TwitchClient client, DbHelper dbHelper)
+        public SongPlayerHandler(JsonConfig config, TwitchApiHelper twitchApi, TwitchClientHelper clientHelper, DbHelper dbHelper)
         {
             _config = config;
             _twitchApi = twitchApi;
-            _client = client;
+            _clientHelper = clientHelper;
             _dbHelper = dbHelper;
             _youtubeClient = new YoutubeClient();
         }
@@ -99,7 +97,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             {
                 if (ex is VideoUnplayableException || ex is ArgumentException)
                 {
-                    _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Reward_VideoNotFound, e.DisplayName));
+                    _clientHelper.SendChannelMessage(SongRequestResources.Reward_VideoNotFound, e.DisplayName);
                     return;
                 }
                 throw;
@@ -107,7 +105,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
 
             if (Math.Abs(video.Duration.TotalMilliseconds) < 0.000001)
             {
-                _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Reward_StreamNotSupported, e.DisplayName));
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_StreamNotSupported, e.DisplayName);
                 return;
             }
 
@@ -117,7 +115,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 var seconds = _config.SongRequestManager.MaximumLengthInSeconds % 60;
                 var maxDuration = $"{minutes:00}:{seconds:00}";
                 var actualDuration = $"{(video.Duration.Hours > 0 ? $"{video.Duration.Hours:00}:" : string.Empty)}{video.Duration.Minutes:00}:{video.Duration.Seconds:00}";
-                _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Reward_MaxDurationExceeded, e.DisplayName, maxDuration, actualDuration));
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_MaxDurationExceeded, e.DisplayName, maxDuration, actualDuration);
                 return;
             }
 
@@ -125,11 +123,13 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             switch (songInfo.Limitation)
             {
                 case SongLimitationType.Banned:
-                    _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Reward_SongIsBanned, e.DisplayName));
+                    _clientHelper.SendChannelMessage(SongRequestResources.Reward_SongIsBanned, e.DisplayName);
                     return;
                 case SongLimitationType.Plus when requestType != SongRequestType.Plus:
-                    var responseTemplate = _config.SongRequestManager.DisplaySongName ? SongRequestResources.Reward_RequestInPlusOnly_SongName : SongRequestResources.Reward_RequestInPlusOnly_NoSongName;
-                    _client.SendMessage(_config.Channel.Name, string.Format(responseTemplate, e.DisplayName, video.Title));
+                    var responseTemplate = _config.SongRequestManager.DisplaySongName
+                        ? SongRequestResources.Reward_RequestInPlusOnly_SongName
+                        : SongRequestResources.Reward_RequestInPlusOnly_NoSongName;
+                    _clientHelper.SendChannelMessage(responseTemplate, e.DisplayName, video.Title);
                     return;
             }
 
@@ -139,8 +139,10 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 {
                     case SongRequestType.Default when !_config.SongRequestManager.AllowDuplicatesDefault:
                     case SongRequestType.Plus when !_config.SongRequestManager.AllowDuplicatesPlus:
-                        var responseTemplate = _config.SongRequestManager.DisplaySongName ? SongRequestResources.Reward_SongInQueue_SongName : SongRequestResources.Reward_SongInQueue_NoSongName;
-                        _client.SendMessage(_config.Channel.Name, string.Format(responseTemplate, e.DisplayName, video.Title));
+                        var responseTemplate = _config.SongRequestManager.DisplaySongName
+                            ? SongRequestResources.Reward_SongInQueue_SongName
+                            : SongRequestResources.Reward_SongInQueue_NoSongName;
+                        _clientHelper.SendChannelMessage(responseTemplate, e.DisplayName, video.Title);
                         return;
                 }
             }
@@ -156,8 +158,10 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             _requestQueue.Add(songRequest);
             Play();
 
-            var textTemplate = _config.SongRequestManager.DisplaySongName ? SongRequestResources.Reward_SongAdded_SongName : SongRequestResources.Reward_SongAdded_NoSongName;
-            _client.SendMessage(_config.Channel.Name,  string.Format(textTemplate, songRequest.YoutubeVideo.Title, songRequest.User.DisplayName, _requestQueue.Count));
+            var textTemplate = _config.SongRequestManager.DisplaySongName
+                ? SongRequestResources.Reward_SongAdded_SongName
+                : SongRequestResources.Reward_SongAdded_NoSongName;
+            _clientHelper.SendChannelMessage(textTemplate, songRequest.YoutubeVideo.Title, songRequest.User.DisplayName, _requestQueue.Count);
         }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
@@ -189,7 +193,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
 
             if (_config.SongRequestManager.DisplaySongName)
             {
-                _client.SendMessage(_config.Channel.Name, string.Format(SongRequestResources.Announce_CurrentSong, queueItem.YoutubeVideo.Title, queueItem.User.DisplayName));
+                _clientHelper.SendChannelMessage(SongRequestResources.Announce_CurrentSong, queueItem.YoutubeVideo.Title, queueItem.User.DisplayName);
             }
 
             while (waveOut.PlaybackState == PlaybackState.Playing || waveOut.PlaybackState == PlaybackState.Paused)

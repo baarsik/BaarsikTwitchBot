@@ -1,19 +1,19 @@
 ﻿using System.Collections.Generic;
+using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook
 {
     public class FarewellChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly JsonConfig _config;
 
-        public FarewellChatHook(TwitchClient client, JsonConfig config)
+        public FarewellChatHook(TwitchClientHelper clientHelper, JsonConfig config)
         {
-            _client = client;
+            _clientHelper = clientHelper;
             _config = config;
         }
 
@@ -27,11 +27,11 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
         {
             if (parameters.Count == 0 || _config.Chat.DisableUnsafeCommands)
             {
-                _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} уже уходит. Приятного времени суток {_config.TwitchEmotes.Love}");
+                _clientHelper.SendChannelMessage($"{chatMessage.Username} уже уходит. Приятного времени суток {_config.TwitchEmotes.Love}");
             }
             else
             {
-                _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} уходит {string.Join(' ', parameters)}. Будем ждать возвращения {_config.TwitchEmotes.Love}");
+                _clientHelper.SendChannelMessage($"{chatMessage.Username} уходит {string.Join(' ', parameters)}. Будем ждать возвращения {_config.TwitchEmotes.Love}");
             }
         }
     }

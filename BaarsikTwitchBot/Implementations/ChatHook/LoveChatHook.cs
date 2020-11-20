@@ -1,20 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook
 {
     public class LoveChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly JsonConfig _config;
 
-        public LoveChatHook(TwitchClient client, JsonConfig config)
+        public LoveChatHook(TwitchClientHelper clientHelper, JsonConfig config)
         {
-            _client = client;
+            _clientHelper = clientHelper;
             _config = config;
         }
 
@@ -33,13 +33,13 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
             switch (percentage)
             {
                 case 0:
-                    _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}%, то есть никак {_config.TwitchEmotes.LUL}");
+                    _clientHelper.SendChannelMessage($"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}%, то есть никак {_config.TwitchEmotes.LUL}");
                     break;
                 case 100:
-                    _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}% - абсолютная любовь {_config.TwitchEmotes.Love}");
+                    _clientHelper.SendChannelMessage($"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}% - абсолютная любовь {_config.TwitchEmotes.Love}");
                     break;
                 default:
-                    _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}%");
+                    _clientHelper.SendChannelMessage($"{chatMessage.Username} любит {string.Join(' ', parameters)} на {percentage}%");
                     break;
             }
         }

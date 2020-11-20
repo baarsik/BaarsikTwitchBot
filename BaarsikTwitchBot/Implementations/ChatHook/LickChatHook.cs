@@ -5,22 +5,21 @@ using BaarsikTwitchBot.Domain.Models;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook
 {
     public class LickChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly TwitchApiHelper _apiHelper;
         private readonly JsonConfig _config;
         private readonly DbHelper _dbHelper;
         private readonly Random _random;
 
-        public LickChatHook(TwitchClient client, TwitchApiHelper apiHelper, JsonConfig config, DbHelper dbHelper)
+        public LickChatHook(TwitchClientHelper clientHelper, TwitchApiHelper apiHelper, JsonConfig config, DbHelper dbHelper)
         {
-            _client = client;
+            _clientHelper = clientHelper;
             _apiHelper = apiHelper;
             _config = config;
             _dbHelper = dbHelper;
@@ -53,7 +52,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
             var timesString = (licks % 10 == 2 || licks % 10 == 3 || licks % 10 == 4) && licks != 12 && licks != 13 && licks != 14 ? "раза" : "раз";
             var nameString = chatMessage.UserId == user.UserId ? "себя" : user.DisplayName;
             var emoteString = licks >= 10 ? $"{_config.TwitchEmotes.PogChamp} {_config.TwitchEmotes.Gasm}" : licks >= 7 ? _config.TwitchEmotes.Gasm : string.Empty;
-            _client.SendMessage(chatMessage.Channel, $"{chatMessage.Username} облизывает {nameString} {licks} {timesString} {emoteString}");
+            _clientHelper.SendChannelMessage($"{chatMessage.Username} облизывает {nameString} {licks} {timesString} {emoteString}");
 
             user.Statistics.LicksReceived += (uint)licks;
             await _dbHelper.UpdateUserAsync(user);

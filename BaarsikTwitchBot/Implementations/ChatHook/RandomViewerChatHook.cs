@@ -3,19 +3,18 @@ using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Resources;
-using TwitchLib.Client;
 using TwitchLib.Client.Models;
 
 namespace BaarsikTwitchBot.Implementations.ChatHook
 {
     public class RandomViewerChatHook : IChatHook
     {
-        private readonly TwitchClient _client;
+        private readonly TwitchClientHelper _clientHelper;
         private readonly TwitchApiHelper _apiHelper;
 
-        public RandomViewerChatHook(TwitchClient client, TwitchApiHelper apiHelper)
+        public RandomViewerChatHook(TwitchClientHelper clientHelper, TwitchApiHelper apiHelper)
         {
-            _client = client;
+            _clientHelper = clientHelper;
             _apiHelper = apiHelper;
         }
 
@@ -29,7 +28,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook
         {
             var randomViewer = _apiHelper.GetRandomViewer();
             var chance = 100 / _apiHelper.CurrentViewers.Count;
-            _client.SendMessage(chatMessage.Channel, string.Format(ChatResources.RandomViewerChatHook_Text, randomViewer.DisplayName, chance));
+            _clientHelper.SendChannelMessage(ChatResources.RandomViewerChatHook_Text, randomViewer.DisplayName, chance);
         }
     }
 }
