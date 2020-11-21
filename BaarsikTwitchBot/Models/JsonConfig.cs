@@ -8,14 +8,14 @@ namespace BaarsikTwitchBot.Models
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public ChannelCredentials BotUser { get; set; } = new ChannelCredentials
         {
-            Scopes = "chat:read chat:edit whispers:read whispers:edit bits:read user:read:broadcast channel:moderate"
+            Scopes = "chat:read chat:edit whispers:edit bits:read user:read:broadcast channel:moderate"
         };
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public ChannelCredentials Channel { get; set; } = new ChannelCredentials
         {
             Name = Constants.User.ChannelName,
-            Scopes = "chat:read chat:edit whispers:read whispers:edit bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:moderate"
+            Scopes = "chat:read chat:edit whispers:edit bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:moderate"
         };
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
