@@ -159,7 +159,7 @@ namespace BaarsikTwitchBot.Helpers
         private async void ViewersUpdateTimerTick()
         {
             var client = new HttpClient();
-            var response = await client.GetAsync($"http://tmi.twitch.tv/group/user/{_config.Channel.Name}/chatters");
+            var response = await client.GetAsync($"http://tmi.twitch.tv/group/user/{Constants.User.ChannelName}/chatters");
             if (!response.IsSuccessStatusCode)
             {
                 return;
@@ -176,7 +176,7 @@ namespace BaarsikTwitchBot.Helpers
             var validFollowerViewerNames = viewersNames
                 .Where(name => !_config.Chat.UsersToIgnore.Contains(name.ToLower())
                             && (BotUsers.Any(f => string.Equals(name, f.DisplayName, StringComparison.CurrentCultureIgnoreCase) || string.Equals(name, f.Login, StringComparison.CurrentCultureIgnoreCase))
-                                || string.Equals(name, _config.Channel.Name, StringComparison.CurrentCultureIgnoreCase)))
+                                || string.Equals(name, Constants.User.ChannelName, StringComparison.CurrentCultureIgnoreCase)))
                 .ToList();
 
             CurrentViewers = BotUsers.Where(x => validFollowerViewerNames.Contains(x.DisplayName)).ToList();

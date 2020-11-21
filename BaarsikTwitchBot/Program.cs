@@ -89,14 +89,14 @@ namespace BaarsikTwitchBot
 
             if (string.IsNullOrEmpty(config.OAuth.ClientID) || string.IsNullOrEmpty(config.OAuth.ClientSecret))
             {
-                Program.Log(VMProtect.SDK.DecryptString("ClientID and ClientSecret are required for the bot to work"), LogLevel.Critical);
+                Program.Log(VMProtect.SDK.DecryptString($"Please validate {nameof(JsonConfig.OAuth)} settings"), LogLevel.Critical);
                 IsSuccessful = false;
                 return;
             }
 
             if (string.IsNullOrEmpty(config.Channel.OAuth.Replace("oauth:", "")))
             {
-                Program.Log(VMProtect.SDK.DecryptString("Twitch user OAuth is required for the bot to work"), LogLevel.Critical);
+                Program.Log(VMProtect.SDK.DecryptString($"Please validate {nameof(JsonConfig.Channel)} settings"), LogLevel.Critical);
                 IsSuccessful = false;
                 return;
             }
@@ -108,12 +108,19 @@ namespace BaarsikTwitchBot
                 return;
             }
 
+            if (string.IsNullOrEmpty(config.BotUser.Name) || string.IsNullOrEmpty(config.BotUser.OAuth.Replace("oauth:", "")))
+            {
+                Program.Log(VMProtect.SDK.DecryptString($"Please validate {nameof(JsonConfig.BotUser)} settings"), LogLevel.Critical);
+                IsSuccessful = false;
+                return;
+            }
+
             var autoRegisterTypes = new List<Type> { typeof(IChatHook), typeof(IAutoRegister) };
             var autoRegisterClasses = Assembly.GetExecutingAssembly().GetTypes()
                 .Where(x => x.IsClass && x.GetInterfaces().Any(t => autoRegisterTypes.Contains(t)) && !x.IsAbstract)
                 .ToList();
 
-            var credentials = new ConnectionCredentials(config.Channel.Name, config.Channel.OAuth);
+            var credentials = new ConnectionCredentials(config.BotUser.Name, config.BotUser.OAuth);
             var clientOptions = new ClientOptions
             {
                 MessagesAllowedInPeriod = 750

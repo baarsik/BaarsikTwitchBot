@@ -6,7 +6,17 @@ namespace BaarsikTwitchBot.Models
     public class JsonConfig
     {
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-        public ChannelCredentials Channel { get; set; } = new ChannelCredentials();
+        public ChannelCredentials BotUser { get; set; } = new ChannelCredentials
+        {
+            Scopes = "chat:read chat:edit whispers:read whispers:edit bits:read user:read:broadcast channel:moderate"
+        };
+
+        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
+        public ChannelCredentials Channel { get; set; } = new ChannelCredentials
+        {
+            Name = Constants.User.ChannelName,
+            Scopes = "chat:read chat:edit whispers:read whispers:edit bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:moderate"
+        };
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public OAuthCredentials OAuth { get; set; } = new OAuthCredentials();
@@ -26,10 +36,13 @@ namespace BaarsikTwitchBot.Models
         public class ChannelCredentials
         {
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-            public string Name { get; set; } = Constants.User.ChannelName;
+            public string Name { get; set; }
 
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string OAuth { get; set; } = string.Empty;
+
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
+            public string Scopes { get; set; }
         }
 
         public class OAuthCredentials
@@ -39,9 +52,6 @@ namespace BaarsikTwitchBot.Models
 
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string ClientSecret { get; set; } = string.Empty;
-
-            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-            public string Scopes { get; set; } = "bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:moderate chat:edit channel:moderate whispers:edit channel_subscriptions chat:read whispers:read";
         }
 
         public class ChatSettings
