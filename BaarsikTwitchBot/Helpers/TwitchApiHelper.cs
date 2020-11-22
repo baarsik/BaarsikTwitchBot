@@ -175,11 +175,12 @@ namespace BaarsikTwitchBot.Helpers
 
             var validFollowerViewerNames = viewersNames
                 .Where(name => !_config.Chat.UsersToIgnore.Contains(name.ToLower())
-                            && (BotUsers.Any(f => string.Equals(name, f.DisplayName, StringComparison.CurrentCultureIgnoreCase) || string.Equals(name, f.Login, StringComparison.CurrentCultureIgnoreCase))
+                            && (BotUsers.Any(f => string.Equals(name, f.DisplayName, StringComparison.CurrentCultureIgnoreCase)
+                                                  || string.Equals(name, f.Login, StringComparison.CurrentCultureIgnoreCase))
                                 || string.Equals(name, Constants.User.ChannelName, StringComparison.CurrentCultureIgnoreCase)))
                 .ToList();
 
-            CurrentViewers = BotUsers.Where(x => validFollowerViewerNames.Contains(x.DisplayName)).ToList();
+            CurrentViewers = BotUsers.Where(x => validFollowerViewerNames.Any(name => string.Equals(name, x.DisplayName, StringComparison.CurrentCultureIgnoreCase))).ToList();
         }
 
         #region PubSub
