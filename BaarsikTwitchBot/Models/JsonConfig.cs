@@ -36,13 +36,13 @@ namespace BaarsikTwitchBot.Models
         public class ChannelCredentials
         {
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
 
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public string OAuth { get; set; } = string.Empty;
 
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-            public string Scopes { get; set; }
+            public string Scopes { get; set; } = string.Empty;
         }
 
         public class OAuthCredentials
