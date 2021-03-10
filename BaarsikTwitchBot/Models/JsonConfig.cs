@@ -85,6 +85,9 @@ namespace BaarsikTwitchBot.Models
 
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)] 
             public bool AllowDuplicatesPlus { get; set; } = true;
+
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
+            public uint SoundVolume { get; set; } = 7;
         }
 
         public class TwitchEmoteSettings

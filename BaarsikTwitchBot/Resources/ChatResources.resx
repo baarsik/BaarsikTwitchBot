@@ -127,7 +127,7 @@
     <value>{0} теперь смотрит стрим на фоне</value>
   </data>
   <data name="RandomViewerChatHook_Text" xml:space="preserve">
-    <value>Случайный зритель: {0} - {1}%</value>
+    <value>Случайный зритель: {0} - {1:0.##}%</value>
   </data>
   <data name="SpitChatHook_SelfSpit" xml:space="preserve">
     <value>{0} плюет себе в лицо {1}</value>

@@ -39,6 +39,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
         public bool IsPlaying { get; set; }
         public bool IsPaused { get; set; }
         public bool IsSkipping { get; set; }
+        public float Volume { get; set; }
         public SongRequest CurrentRequest => _requestQueue.FirstOrDefault();
         public bool IsPlayerActive => IsInitialized && IsPlaying && !IsSkipping && CurrentRequest != null;
 
@@ -47,6 +48,10 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
         {
             if (IsInitialized)
                 return;
+
+            Volume = _config.SongRequestManager.SoundVolume >= 100
+                ? 1f
+                : _config.SongRequestManager.SoundVolume / 100f;
 
             _twitchApi.OnRewardRedeemed += OnRewardRedeemed;
             IsInitialized = true;
@@ -186,7 +191,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             await using var reader = new MediaFoundationReader(audioFileUrl);
             using var waveOut = new WaveOutEvent
             {
-                Volume = 0.07f
+                Volume = Volume
             };
             waveOut.Init(reader);
             waveOut.Play();
@@ -198,16 +203,15 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
 
             while (waveOut.PlaybackState == PlaybackState.Playing || waveOut.PlaybackState == PlaybackState.Paused)
             {
+                if (IsSkipping)
+                {
+                    waveOut.Stop();
+                    IsSkipping = false;
+                }
                 switch (waveOut.PlaybackState)
                 {
                     case PlaybackState.Playing:
-                        if (IsSkipping)
-                        {
-                            waveOut.Stop();
-                            IsSkipping = false;
-                            IsPaused = false;
-                        }
-                        else if (IsPaused)
+                        if (IsPaused)
                         {
                             waveOut.Pause();
                         }
@@ -226,6 +230,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             }
 
             _requestQueue.RemoveAt(0);
+            Volume = waveOut.Volume;
             IsPlaying = false;
             IsPaused = false;
             Play();

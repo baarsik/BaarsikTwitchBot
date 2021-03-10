@@ -88,7 +88,7 @@ namespace BaarsikTwitchBot.Resources {
         }
         
         /// <summary>
-        ///   Ищет локализованную строку, похожую на Случайный зритель: {0} - {1}%.
+        ///   Ищет локализованную строку, похожую на Случайный зритель: {0} - {1:0.##}%.
         /// </summary>
         internal static string RandomViewerChatHook_Text {
             get {
