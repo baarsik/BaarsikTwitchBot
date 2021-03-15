@@ -1,0 +1,28 @@
+﻿<#@ template language="C#" #>
+<#@ output extension=".cs" #>
+
+using System.Reflection;
+using System.Windows;
+
+[assembly: ThemeInfo(
+ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
+//(used if a resource is not found in the page,
+// or application resource dictionaries)
+ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
+//(used if a resource is not found in the page,
+// app, or any theme specific resource dictionaries)
+)]
+
+[assembly: AssemblyVersion("<#= this.Major #>.<#= this.Minor #>.<#= this.Patch #>.<#= this.DaysSinceProjectStarted #>")]
+[assembly: AssemblyFileVersion("<#= this.Major #>.<#= this.Minor #>.<#= this.Patch #>.<#= this.DaysSinceProjectStarted #>")]
+
+<#+
+
+int Major = 1;
+int Minor = 0;
+int Patch = 0;
+ 
+static DateTime ProjectStartedDate = new DateTime(year: 2021, month: 3, day: 1);
+int DaysSinceProjectStarted = (int)((DateTime.UtcNow - ProjectStartedDate).TotalDays);
+
+#>

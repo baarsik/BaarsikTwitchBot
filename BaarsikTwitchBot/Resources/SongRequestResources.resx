@@ -150,6 +150,12 @@
   <data name="PauseSongChatHook_Resume_SongName" xml:space="preserve">
     <value>{0} возобновил трек '{1}' от @{2}</value>
   </data>
+  <data name="Reward_InsufficientViews" xml:space="preserve">
+    <value>@{0}, видео имеет менее {1} просмотров</value>
+  </data>
+  <data name="Reward_LowerThanMinDuration" xml:space="preserve">
+    <value>@{0}, видео длительностью менее одной минуты ({1})</value>
+  </data>
   <data name="Reward_MaxDurationExceeded" xml:space="preserve">
     <value>@{0}, видео длительностью более {1} ({2})</value>
   </data>
@@ -173,6 +179,9 @@
   </data>
   <data name="Reward_SongIsBanned" xml:space="preserve">
     <value>@{0}, данная песня запрещена к заказу стримером</value>
+  </data>
+  <data name="Reward_SongUnplayable" xml:space="preserve">
+    <value>@{0}, YouTube не позволяет загрузить этот трек</value>
   </data>
   <data name="Reward_StreamNotSupported" xml:space="preserve">
     <value>@{0}, стрим не поддерживается</value>

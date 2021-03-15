@@ -1,5 +1,5 @@
 ﻿using BaarsikTwitchBot.Domain.Models;
-using TwitchLib.Api.Helix.Models.Users;
+using TwitchLib.Api.Helix.Models.Users.GetUsers;
 
 namespace BaarsikTwitchBot.Extensions
 {

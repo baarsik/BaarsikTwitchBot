@@ -160,6 +160,24 @@ namespace BaarsikTwitchBot.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на @{0}, видео имеет менее {1} просмотров.
+        /// </summary>
+        internal static string Reward_InsufficientViews {
+            get {
+                return ResourceManager.GetString("Reward_InsufficientViews", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на @{0}, видео длительностью менее одной минуты ({1}).
+        /// </summary>
+        internal static string Reward_LowerThanMinDuration {
+            get {
+                return ResourceManager.GetString("Reward_LowerThanMinDuration", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на @{0}, видео длительностью более {1} ({2}).
         /// </summary>
         internal static string Reward_MaxDurationExceeded {
@@ -228,6 +246,15 @@ namespace BaarsikTwitchBot.Resources {
         internal static string Reward_SongIsBanned {
             get {
                 return ResourceManager.GetString("Reward_SongIsBanned", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на @{0}, YouTube не позволяет загрузить этот трек.
+        /// </summary>
+        internal static string Reward_SongUnplayable {
+            get {
+                return ResourceManager.GetString("Reward_SongUnplayable", resourceCulture);
             }
         }
         

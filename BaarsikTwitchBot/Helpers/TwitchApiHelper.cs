@@ -12,9 +12,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TwitchLib.Api;
-using TwitchLib.Api.Helix.Models.Users;
+using TwitchLib.Api.Core.Enums;
+using TwitchLib.Api.Helix.Models.ChannelPoints.UpdateCustomRewardRedemptionStatus;
+using TwitchLib.Api.Helix.Models.Users.GetUserFollows;
+using TwitchLib.Api.Helix.Models.Users.GetUsers;
 using TwitchLib.PubSub;
 using TwitchLib.PubSub.Events;
+using ILogger = BaarsikTwitchBot.Interfaces.ILogger;
 
 namespace BaarsikTwitchBot.Helpers
 {
@@ -23,14 +27,16 @@ namespace BaarsikTwitchBot.Helpers
         private readonly TwitchAPI _twitchApi;
         private readonly JsonConfig _config;
         private readonly DbHelper _dbHelper;
+        private readonly ILogger _logger;
         private readonly Random _random;
         private readonly Timer _viewersUpdateTimer;
 
-        public TwitchApiHelper(TwitchAPI twitchApi, JsonConfig config, DbHelper dbHelper)
+        public TwitchApiHelper(TwitchAPI twitchApi, JsonConfig config, DbHelper dbHelper, ILogger logger)
         {
             _twitchApi = twitchApi;
             _config = config;
             _dbHelper = dbHelper;
+            _logger = logger;
             _random = new Random();
 
             UpdateFollowerList().Wait();
@@ -47,11 +53,11 @@ namespace BaarsikTwitchBot.Helpers
             pubSub.OnListenResponse += (sender, args) =>
             {
                 if (!args.Successful)
-                    Program.Log($"Failed to listen! Response: {args.Response.Error} for topic {args.Topic}", LogLevel.Error);
+                    _logger.Log($"Failed to listen! Response: {args.Response.Error} for topic {args.Topic}", LogLevel.Error);
             };
             pubSub.OnPubSubServiceConnected += (sender, args) =>
             {
-                Program.Log("Connected to PubSub");
+                _logger.Log("Connected to PubSub", LogLevel.Information);
 
                 pubSub.ListenToVideoPlayback(_config.Channel.Name);
                 pubSub.ListenToFollows(StreamerUser.UserId);
@@ -61,7 +67,7 @@ namespace BaarsikTwitchBot.Helpers
             };
             pubSub.OnPubSubServiceClosed += (sender, args) =>
             {
-                Program.Log("Disconnected from PubSub. Attempting reconnect", LogLevel.Warning);
+                _logger.Log("Disconnected from PubSub. Attempting reconnect", LogLevel.Warning);
                 Thread.Sleep(1000);
                 pubSub.Connect();
             };
@@ -121,6 +127,20 @@ namespace BaarsikTwitchBot.Helpers
             return BotUsers.FirstOrDefault(x => x.UserId == userId);
         }
 
+        public async Task SetRewardRedemptionStatusAsync(string rewardId, string redemptionId, CustomRewardRedemptionStatus status)
+        {
+            try
+            {
+                await _twitchApi.Helix.ChannelPoints.UpdateCustomRewardRedemptionStatus(StreamerUser.UserId, rewardId,
+                    new List<string> {redemptionId},
+                    new UpdateCustomRewardRedemptionStatusRequest {Status = status}, _config.Channel.OAuth);
+            }
+            catch (Exception e)
+            {
+                _logger.Log(e.Message, LogLevel.Error);
+            }
+        }
+
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private async Task UpdateFollowerList()
         {
@@ -152,7 +172,7 @@ namespace BaarsikTwitchBot.Helpers
 
             BotUsers = await _dbHelper.GetUsersQuery().ToListAsync();
 
-            Program.Log($"Loaded followers list for channel '{StreamerUser.Login}', total followers: {followers.Count}, total bot users: {BotUsers.Count}");
+            _logger.Log($"Loaded followers list for channel '{StreamerUser.Login}', total followers: {followers.Count}, total bot users: {BotUsers.Count}", LogLevel.Information);
         }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
@@ -196,7 +216,7 @@ namespace BaarsikTwitchBot.Helpers
             if (botUser.IsBanned)
                 return;
 
-            Program.Log($"New follower at '{StreamerUser.Login}': {(e.Username == e.DisplayName ? e.DisplayName : $"{e.DisplayName} ({e.Username})")}");
+            _logger.Log($"New follower at '{StreamerUser.Login}': {(e.Username == e.DisplayName ? e.DisplayName : $"{e.DisplayName} ({e.Username})")}", LogLevel.Information);
 
             OnFollow?.Invoke(sender, user);
         }
@@ -209,7 +229,7 @@ namespace BaarsikTwitchBot.Helpers
                 return;
 
             var subscriberName = e.Subscription.Username == e.Subscription.RecipientDisplayName ? e.Subscription.RecipientDisplayName : $"{e.Subscription.RecipientDisplayName} ({e.Subscription.RecipientName})";
-            Program.Log($"New subscriber at '{StreamerUser.Login}': {subscriberName}");
+            _logger.Log($"New subscriber at '{StreamerUser.Login}': {subscriberName}", LogLevel.Information);
 
             OnChannelSubscription?.Invoke(sender, e);
         }
@@ -224,7 +244,7 @@ namespace BaarsikTwitchBot.Helpers
             if (isBanned)
                 return;
 
-            Program.Log($"Reward '{e.RewardTitle}' redeemed at '{StreamerUser.Login}' {e.Login}. Message: \"{e.Message}\"");
+            _logger.Log($"Reward '{e.RewardTitle}' redeemed at '{StreamerUser.Login}' {e.Login}. Message: \"{e.Message}\"", LogLevel.Information);
             OnRewardRedeemed?.Invoke(sender, e);
         }
         #endregion

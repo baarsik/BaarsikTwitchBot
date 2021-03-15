@@ -10,6 +10,7 @@ using BaarsikTwitchBot.Models;
 using Microsoft.Extensions.Logging;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
+using ILogger = BaarsikTwitchBot.Interfaces.ILogger;
 
 namespace BaarsikTwitchBot.Controllers
 {
@@ -19,17 +20,28 @@ namespace BaarsikTwitchBot.Controllers
         private readonly TwitchApiHelper _apiHelper;
         private readonly IList<IChatHook> _chatHooks = new List<IChatHook>();
         private readonly IServiceProvider _serviceProvider;
+        private readonly ILogger _logger;
 
-        public BotController(TwitchClient twitchClient, TwitchApiHelper apiHelper, IServiceProvider serviceProvider)
+        public BotController(TwitchClient twitchClient, TwitchApiHelper apiHelper, IServiceProvider serviceProvider, ILogger logger)
         {
             _serviceProvider = serviceProvider;
+            _logger = logger;
             _twitchClient = twitchClient;
             _apiHelper = apiHelper;
+        }
+
+        public void Initialize()
+        {
+            if (IsInitialized) return;
 
             InitTwitchClient();
             InitChatHooks();
             InitAutoRegisteredClasses();
+
+            IsInitialized = true;
         }
+
+        public bool IsInitialized { get; private set; }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -98,11 +110,11 @@ namespace BaarsikTwitchBot.Controllers
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void InitTwitchClient()
         {
-            _twitchClient.OnConnected += (sender, args) => Program.Log($"Connected to '{args.AutoJoinChannel}' chat as '{args.BotUsername}'");
-            _twitchClient.OnConnectionError += (sender, args) => Program.Log($"Failed to connect: {args.Error.Message}", LogLevel.Error);
+            _twitchClient.OnConnected += (sender, args) => _logger.Log($"Connected to '{Constants.User.ChannelName}' chat as '{args.BotUsername}'", LogLevel.Information);
+            _twitchClient.OnConnectionError += (sender, args) => _logger.Log($"Failed to connect: {args.Error.Message}", LogLevel.Error);
             _twitchClient.OnDisconnected += (sender, args) =>
             {
-                Program.Log("Bot has been disconnected from IRC. Attempting reconnect", LogLevel.Warning);
+                _logger.Log("Bot has been disconnected from IRC. Attempting reconnect", LogLevel.Warning);
                 while (!_twitchClient.IsConnected)
                 {
                     Thread.Sleep(1000);

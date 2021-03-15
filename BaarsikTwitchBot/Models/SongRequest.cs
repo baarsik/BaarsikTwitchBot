@@ -14,6 +14,8 @@ namespace BaarsikTwitchBot.Models
 
         public Guid RewardId { get; set; }
 
+        public Guid RedemptionId { get; set; }
+
         public Video YoutubeVideo { get; set; }
 
         public SongRequestType RequestType { get; set; }

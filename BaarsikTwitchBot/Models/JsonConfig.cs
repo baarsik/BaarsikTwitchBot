@@ -15,7 +15,7 @@ namespace BaarsikTwitchBot.Models
         public ChannelCredentials Channel { get; set; } = new ChannelCredentials
         {
             Name = Constants.User.ChannelName,
-            Scopes = "chat:read chat:edit whispers:edit bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:moderate"
+            Scopes = "chat:read chat:edit whispers:edit bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:manage:redemptions channel:moderate"
         };
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
@@ -32,6 +32,9 @@ namespace BaarsikTwitchBot.Models
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public string ConnectionString { get; set; } = "Server=localhost;Database=BaarsikTwitchBot;Trusted_Connection=True;Integrated Security=true;";
+
+        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
+        public int WebServerLocalPort { get; set; } = 14828;
 
         public class ChannelCredentials
         {
@@ -88,6 +91,9 @@ namespace BaarsikTwitchBot.Models
 
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public uint SoundVolume { get; set; } = 7;
+
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
+            public int YoutubeMinimumViews { get; set; } = 1000;
         }
 
         public class TwitchEmoteSettings
