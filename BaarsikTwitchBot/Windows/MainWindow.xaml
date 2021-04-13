@@ -8,7 +8,7 @@
         xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
         xmlns:adonisExtensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
-        Height="450" Width="800" MinWidth="800" MinHeight="450"
+        Height="600" Width="1000" MinWidth="1000" MinHeight="600"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" IconVisibility="Collapsed"
         Title="BaarsikTwitchBot" FontFamily="{StaticResource OpenSans}">
     <controls:AdonisWindow.TitleBarContent>
@@ -87,15 +87,36 @@
                 </Grid>
             </TabItem>
         </TabControl>
-        <Grid Grid.Row="1" Height="60" Visibility="Collapsed">
+        <Grid Grid.Row="1" Height="60" DataContext="{Binding Path=SongPlayer}" Visibility="{Binding Visibility, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=Visible}">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="25*"/>
-                <ColumnDefinition Width="50*"/>
-                <ColumnDefinition Width="25*"/>
+                <ColumnDefinition Width="30*"/>
+                <ColumnDefinition Width="40*"/>
+                <ColumnDefinition Width="30*"/>
             </Grid.ColumnDefinitions>
-            <StackPanel Orientation="Vertical" Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0">
-                <TextBlock Text="Test"/>
+            <StackPanel Orientation="Horizontal" Grid.Column="0">
+                <Grid Margin="5" Width="75" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center">
+                    <Image Width="90" Height="67" Source="{Binding CurrentRequest.YoutubeVideo.Thumbnails.LowResUrl, Converter={StaticResource BitmapImageConverter}}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+                <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0">
+                    <TextBlock Text="{Binding CurrentRequest.YoutubeVideo.Title, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}"/>
+                    <TextBlock Text="{Binding CurrentRequest.User.DisplayName, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}" Foreground="#aaa"/>
+                </StackPanel>
             </StackPanel>
+            <Grid Grid.Column="1" HorizontalAlignment="Stretch" VerticalAlignment="Center" Margin="5,0">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock Grid.Column="0" Text="{Binding CurrentRequestTimeSpan, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=0:00, Converter={StaticResource TimeSpanConverter}}" FontSize="10"/>
+                <ProgressBar Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0" Minimum="0" Maximum="10000" Height="5"
+                             Value="{Binding CurrentRequestProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=0}"
+                             adonisExtensions:ProgressBarExtension.IsProgressAnimationEnabled="False"
+                             adonisExtensions:CornerRadiusExtension.CornerRadius="2"/>
+                <TextBlock Grid.Column="2" Text="{Binding CurrentRequest.YoutubeVideo.Duration, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=0:00, Converter={StaticResource TimeSpanConverter}}" FontSize="10"/>
+            </Grid>
+            <Slider Grid.Column="2" HorizontalAlignment="Right" Margin="5,0" Width="100" Minimum="0" Maximum="1000" IsTabStop="False" adonisExtensions:CornerRadiusExtension.CornerRadius="2"
+                    Value="{Binding Volume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=250}" />
         </Grid>
     </Grid>
 </controls:AdonisWindow>

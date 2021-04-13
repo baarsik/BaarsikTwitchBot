@@ -8,6 +8,8 @@ using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Resources;
+using Microsoft.Extensions.Logging;
+using NAudio.Utils;
 using NAudio.Wave;
 using TwitchLib.Api.Core.Enums;
 using TwitchLib.PubSub.Events;
@@ -15,6 +17,7 @@ using YoutubeExplode;
 using YoutubeExplode.Exceptions;
 using YoutubeExplode.Videos;
 using YoutubeExplode.Videos.Streams;
+using ILogger = BaarsikTwitchBot.Interfaces.ILogger;
 
 namespace BaarsikTwitchBot.Implementations.AutoRegister
 {
@@ -24,14 +27,16 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
         private readonly TwitchApiHelper _twitchApi;
         private readonly TwitchClientHelper _clientHelper;
         private readonly DbHelper _dbHelper;
+        private readonly ILogger _logger;
         private readonly YoutubeClient _youtubeClient;
 
-        public SongPlayerHandler(JsonConfig config, TwitchApiHelper twitchApi, TwitchClientHelper clientHelper, DbHelper dbHelper)
+        public SongPlayerHandler(JsonConfig config, TwitchApiHelper twitchApi, TwitchClientHelper clientHelper, DbHelper dbHelper, ILogger logger)
         {
             _config = config;
             _twitchApi = twitchApi;
             _clientHelper = clientHelper;
             _dbHelper = dbHelper;
+            _logger = logger;
             _youtubeClient = new YoutubeClient();
         }
 
@@ -101,7 +106,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 return;
             }
 
-            var requestUnparsed = e.Message.Split(' ').FirstOrDefault();
+            var requestUnparsed = e.Message.Split(' ').FirstOrDefault()?.Trim();
 
             Video video;
             try
@@ -110,11 +115,12 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             }
             catch (Exception ex)
             {
-                if (ex is VideoUnplayableException || ex is ArgumentException)
+                if (ex is VideoUnplayableException or ArgumentException)
                 {
                     _clientHelper.SendChannelMessage(SongRequestResources.Reward_VideoNotFound, e.DisplayName);
                     return;
                 }
+                _logger.Log($"Video parsing error for '{requestUnparsed}': {ex.Message}", LogLevel.Critical);
                 throw;
             }
 
@@ -205,12 +211,15 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
         }
 
         public delegate void SongRequestArgs(SongRequest songRequest);
+        public delegate void SongPlayFinishedArgs(SongRequest songRequest, SongRequest nextRequest);
+        public delegate void SongTimeSpanUpdatedArgs(SongRequest songRequest, TimeSpan timeSpan);
         public event SongRequestArgs OnPlayStarted;
-        public event SongRequestArgs OnPlayFinished;
+        public event SongPlayFinishedArgs OnPlayFinished;
         public event SongRequestArgs OnRequestAdded;
         public event SongRequestArgs OnSongPaused;
         public event SongRequestArgs OnSongResumed;
         public event SongRequestArgs OnSongSkipped;
+        public event SongTimeSpanUpdatedArgs OnCurrentSongTimeSpanUpdated;
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private async void Play()
@@ -232,11 +241,13 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             var audioFileUrl = streamManifest.GetAudioOnly().WithHighestBitrate().Url;
 
             await using var reader = new MediaFoundationReader(audioFileUrl);
-            using var waveOut = new WaveOutEvent
+            await using var channel = new WaveChannel32(reader)
             {
-                Volume = Volume
+                Volume = Volume,
+                PadWithZeroes = false
             };
-            waveOut.Init(reader);
+            using var waveOut = new WaveOutEvent();
+            waveOut.Init(channel);
             waveOut.Play();
 
             if (_config.SongRequestManager.DisplaySongName)
@@ -257,6 +268,11 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 switch (waveOut.PlaybackState)
                 {
                     case PlaybackState.Playing:
+                        OnCurrentSongTimeSpanUpdated?.Invoke(queueItem, waveOut.GetPositionTimeSpan());
+                        if (Math.Abs(Volume - channel.Volume) > 0.001f)
+                        {
+                            channel.Volume = Volume;
+                        }
                         if (IsPaused)
                         {
                             OnSongPaused?.Invoke(queueItem);
@@ -278,9 +294,8 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             }
 
             RequestQueue.RemoveAt(0);
-            Volume = waveOut.Volume;
             await _twitchApi.SetRewardRedemptionStatusAsync(queueItem.RewardId.ToString(), queueItem.RedemptionId.ToString(), CustomRewardRedemptionStatus.FULFILLED);
-            OnPlayFinished?.Invoke(queueItem);
+            OnPlayFinished?.Invoke(queueItem, RequestQueue.FirstOrDefault());
             IsPlaying = false;
             IsPaused = false;
             Play();

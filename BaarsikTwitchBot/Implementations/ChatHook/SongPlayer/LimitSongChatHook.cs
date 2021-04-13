@@ -39,7 +39,7 @@ namespace BaarsikTwitchBot.Implementations.ChatHook.SongPlayer
             var textTemplate = _config.SongRequestManager.DisplaySongName
                 ? SongRequestResources.LimitSongChatHook_Success_SongName
                 : SongRequestResources.LimitSongChatHook_Success_NoSongName;
-            _clientHelper.SendChannelMessage(textTemplate, chatMessage.Username, request.YoutubeVideo.Title, request.User.DisplayName);
+            _clientHelper.SendChannelMessage(textTemplate, chatMessage.Username, request.YoutubeVideo.Title, _config.SongRequestManager.RewardTitlePlus);
         }
     }
 }

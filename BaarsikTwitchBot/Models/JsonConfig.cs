@@ -90,7 +90,7 @@ namespace BaarsikTwitchBot.Models
             public bool AllowDuplicatesPlus { get; set; } = true;
 
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-            public uint SoundVolume { get; set; } = 7;
+            public uint SoundVolume { get; set; } = 25;
 
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
             public int YoutubeMinimumViews { get; set; } = 1000;

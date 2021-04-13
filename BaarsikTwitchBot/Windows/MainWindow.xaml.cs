@@ -54,12 +54,13 @@ namespace BaarsikTwitchBot.Windows
             _apiHelper.OnChannelSubscription += (_, args) => Dashboard.NewSubscribers++;
 
             _twitchClient.OnMessageReceived += OnTwitchChatMessageReceived;
+            InitSongPlayer();
         }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void OnTwitchChatMessageReceived(object sender, OnMessageReceivedArgs e)
         {
-            if (e.ChatMessage.Message.StartsWith('!'))
+            if (e.ChatMessage.Message.StartsWith('!') || !string.IsNullOrEmpty(e.ChatMessage.CustomRewardId))
                 return;
 
             Dashboard.MessagesSent++;

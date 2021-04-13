@@ -179,7 +179,18 @@ namespace BaarsikTwitchBot.Helpers
         private async void ViewersUpdateTimerTick()
         {
             var client = new HttpClient();
-            var response = await client.GetAsync($"http://tmi.twitch.tv/group/user/{Constants.User.ChannelName}/chatters");
+            HttpResponseMessage response;
+
+            try
+            {
+                response = await client.GetAsync($"http://tmi.twitch.tv/group/user/{Constants.User.ChannelName}/chatters");
+            }
+            catch (HttpRequestException e)
+            {
+                _logger.Log($"Error reaching tmi.twitch.tv: {e.Message}", LogLevel.Error);
+                return;
+            }
+
             if (!response.IsSuccessStatusCode)
             {
                 return;

@@ -3,7 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:BaarsikTwitchBot"
              xmlns:adonisUi="clr-namespace:AdonisUI;assembly=AdonisUI"
-             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI">
+             xmlns:adonisControls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+             xmlns:conv="clr-namespace:BaarsikTwitchBot.Windows.Converters">
     <Application.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -12,6 +13,8 @@
             </ResourceDictionary.MergedDictionaries>
             <FontFamily x:Key="OpenSans">pack://application:,,,/Fonts/#Open Sans</FontFamily>
             <FontFamily x:Key="Play">pack://application:,,,/Fonts/#Play</FontFamily>
+            <conv:BitmapImageConverter x:Key="BitmapImageConverter"/>
+            <conv:TimeSpanConverter x:Key="TimeSpanConverter"/>
         </ResourceDictionary>
     </Application.Resources>
 </Application>
