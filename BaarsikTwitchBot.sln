@@ -7,6 +7,12 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaarsikTwitchBot", "Baarsik
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaarsikTwitchBot.Domain", "BaarsikTwitchBot.Domain\BaarsikTwitchBot.Domain.csproj", "{470FE2D9-60D2-4331-9004-FBECFF3CF228}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaarsikTwitchBot.UI", "BaarsikTwitchBot.UI\BaarsikTwitchBot.UI.csproj", "{5124740E-1A59-4AF9-B0CB-A85218E1A96B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaarsikTwitchBot.Core", "BaarsikTwitchBot.Core\BaarsikTwitchBot.Core.csproj", "{82B24B79-D13D-4214-85C3-0F05CA3C1969}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BaarsikTwitchBot.Messaging", "BaarsikTwitchBot.Messaging\BaarsikTwitchBot.Messaging.csproj", "{EC457FF4-58A4-40CE-9641-36F953086D88}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -31,6 +37,30 @@ Global
 		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Release|Any CPU.Build.0 = Release|Any CPU
 		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Release|x64.ActiveCfg = Release|x64
 		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Release|x64.Build.0 = Release|x64
+		{5124740E-1A59-4AF9-B0CB-A85218E1A96B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5124740E-1A59-4AF9-B0CB-A85218E1A96B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5124740E-1A59-4AF9-B0CB-A85218E1A96B}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5124740E-1A59-4AF9-B0CB-A85218E1A96B}.Debug|x64.Build.0 = Debug|Any CPU
+		{5124740E-1A59-4AF9-B0CB-A85218E1A96B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5124740E-1A59-4AF9-B0CB-A85218E1A96B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5124740E-1A59-4AF9-B0CB-A85218E1A96B}.Release|x64.ActiveCfg = Release|Any CPU
+		{5124740E-1A59-4AF9-B0CB-A85218E1A96B}.Release|x64.Build.0 = Release|Any CPU
+		{82B24B79-D13D-4214-85C3-0F05CA3C1969}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82B24B79-D13D-4214-85C3-0F05CA3C1969}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82B24B79-D13D-4214-85C3-0F05CA3C1969}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{82B24B79-D13D-4214-85C3-0F05CA3C1969}.Debug|x64.Build.0 = Debug|Any CPU
+		{82B24B79-D13D-4214-85C3-0F05CA3C1969}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82B24B79-D13D-4214-85C3-0F05CA3C1969}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82B24B79-D13D-4214-85C3-0F05CA3C1969}.Release|x64.ActiveCfg = Release|Any CPU
+		{82B24B79-D13D-4214-85C3-0F05CA3C1969}.Release|x64.Build.0 = Release|Any CPU
+		{EC457FF4-58A4-40CE-9641-36F953086D88}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EC457FF4-58A4-40CE-9641-36F953086D88}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EC457FF4-58A4-40CE-9641-36F953086D88}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{EC457FF4-58A4-40CE-9641-36F953086D88}.Debug|x64.Build.0 = Debug|Any CPU
+		{EC457FF4-58A4-40CE-9641-36F953086D88}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EC457FF4-58A4-40CE-9641-36F953086D88}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EC457FF4-58A4-40CE-9641-36F953086D88}.Release|x64.ActiveCfg = Release|Any CPU
+		{EC457FF4-58A4-40CE-9641-36F953086D88}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
