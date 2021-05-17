@@ -140,9 +140,11 @@ namespace BaarsikTwitchBot
             };
 
             services.AddSingleton(Logger);
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Broadcasterkits", "data.db");
+            Directory.CreateDirectory(Path.GetDirectoryName(path));
             services.AddDbContext<ApplicationContext>(options =>
             {
-                options.UseSqlServer(Config.ConnectionString);
+                options.UseSqlite($"Filename={path}");
             });
             services.AddSingleton(Config);
             services.AddSingleton(twitchClient);

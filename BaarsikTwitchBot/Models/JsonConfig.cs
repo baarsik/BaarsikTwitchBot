@@ -6,13 +6,13 @@ namespace BaarsikTwitchBot.Models
     public class JsonConfig
     {
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-        public ChannelCredentials BotUser { get; set; } = new ChannelCredentials
+        public ChannelCredentials BotUser { get; set; } = new()
         {
             Scopes = "chat:read chat:edit whispers:edit bits:read user:read:broadcast channel:moderate"
         };
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-        public ChannelCredentials Channel { get; set; } = new ChannelCredentials
+        public ChannelCredentials Channel { get; set; } = new()
         {
             Name = Constants.User.ChannelName,
             Scopes = "chat:read chat:edit whispers:edit bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:manage:redemptions channel:moderate"
@@ -25,13 +25,10 @@ namespace BaarsikTwitchBot.Models
         public ChatSettings Chat { get; set; } = new ChatSettings();
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-        public SongRequestManagerSettings SongRequestManager { get; set; } = new SongRequestManagerSettings();
+        public SongRequestManagerSettings SongRequestManager { get; set; } = new();
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-        public TwitchEmoteSettings TwitchEmotes { get; set; } = new TwitchEmoteSettings();
-
-        [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-        public string ConnectionString { get; set; } = "Server=localhost;Database=BaarsikTwitchBot;Trusted_Connection=True;Integrated Security=true;";
+        public TwitchEmoteSettings TwitchEmotes { get; set; } = new();
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public int WebServerLocalPort { get; set; } = 14828;

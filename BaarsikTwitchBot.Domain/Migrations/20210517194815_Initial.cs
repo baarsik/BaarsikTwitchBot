@@ -11,9 +11,9 @@ namespace BaarsikTwitchBot.Domain.Migrations
                 name: "SongInfo",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    VideoId = table.Column<string>(nullable: true),
-                    Limitation = table.Column<int>(nullable: false)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    VideoId = table.Column<string>(type: "TEXT", nullable: true),
+                    Limitation = table.Column<int>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -24,14 +24,15 @@ namespace BaarsikTwitchBot.Domain.Migrations
                 name: "Users",
                 columns: table => new
                 {
-                    Id = table.Column<Guid>(nullable: false),
-                    UserId = table.Column<string>(nullable: true),
-                    Login = table.Column<string>(nullable: true),
-                    DisplayName = table.Column<string>(nullable: true),
-                    IsFollower = table.Column<bool>(nullable: false),
-                    IsBannedSongPlayer = table.Column<bool>(nullable: false),
-                    SpitsReceived = table.Column<long>(nullable: true),
-                    LicksReceived = table.Column<long>(nullable: true)
+                    Id = table.Column<Guid>(type: "TEXT", nullable: false),
+                    UserId = table.Column<string>(type: "TEXT", nullable: true),
+                    Login = table.Column<string>(type: "TEXT", nullable: true),
+                    DisplayName = table.Column<string>(type: "TEXT", nullable: true),
+                    IsFollower = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsBanned = table.Column<bool>(type: "INTEGER", nullable: false),
+                    IsBannedSongPlayer = table.Column<bool>(type: "INTEGER", nullable: false),
+                    SpitsReceived = table.Column<uint>(type: "INTEGER", nullable: true),
+                    LicksReceived = table.Column<uint>(type: "INTEGER", nullable: true)
                 },
                 constraints: table =>
                 {
