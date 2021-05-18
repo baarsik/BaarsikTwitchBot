@@ -10,7 +10,7 @@ namespace BaarsikTwitchBot.Domain
         public ApplicationContext CreateDbContext(string[] args)
         {
             var optionsBuilder = new DbContextOptionsBuilder<ApplicationContext>();
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Broadcasterkits", "data.db");
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StreamKiller", "data.db");
             Directory.CreateDirectory(Path.GetDirectoryName(path));
             optionsBuilder.UseSqlite($"Filename={path}");
             return new ApplicationContext(optionsBuilder.Options);

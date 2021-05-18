@@ -10,7 +10,7 @@
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Height="600" Width="1000" MinWidth="1000" MinHeight="600"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" IconVisibility="Collapsed"
-        Title="BaarsikTwitchBot" FontFamily="{StaticResource OpenSans}">
+        Title="StreamKiller" FontFamily="{StaticResource OpenSans}">
     <controls:AdonisWindow.TitleBarContent>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <!--Button Content="?"
@@ -48,6 +48,10 @@
                     <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock Text="{Binding Dashboard.MessagesSent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center"/>
                         <TextBlock Text="messages sent" HorizontalAlignment="Center" FontSize="12"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding Dashboard.UniqueChatters, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}" HorizontalAlignment="Center" FontSize="8"/>
+                            <TextBlock Text=" unique chatter(s)" HorizontalAlignment="Center" FontSize="8"/>
+                        </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock Text="{Binding Dashboard.NewSubscribers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center"/>

@@ -44,6 +44,9 @@ namespace BaarsikTwitchBot
                 Application.Current.Shutdown();
                 return;
             }
+
+            Directory.CreateDirectory(Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StreamKiller"));
+
             var host = Host.CreateDefaultBuilder()
                 .ConfigureServices(ConfigureServices)
                 .Build();
@@ -140,8 +143,7 @@ namespace BaarsikTwitchBot
             };
 
             services.AddSingleton(Logger);
-            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "Broadcasterkits", "data.db");
-            Directory.CreateDirectory(Path.GetDirectoryName(path));
+            var path = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StreamKiller", "data.db");
             services.AddDbContext<ApplicationContext>(options =>
             {
                 options.UseSqlite($"Filename={path}");
@@ -167,22 +169,21 @@ namespace BaarsikTwitchBot
 
         private JsonConfig GetConfig()
         {
-            const string path = "./config/";
-            if (!Directory.Exists(path))
-            {
-                Directory.CreateDirectory(path);
-            }
-
-            var fileName = $"{path}config.json";
+            #if DEBUG
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StreamKiller", "config_debug.json");
+            #else
+            var filePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "StreamKiller", "config.json");
+            #endif
+            
             var config = new JsonConfig();
-            if (File.Exists(fileName))
+            if (File.Exists(filePath))
             {
-                config = JsonConvert.DeserializeObject<JsonConfig>(File.ReadAllText(fileName));
+                config = JsonConvert.DeserializeObject<JsonConfig>(File.ReadAllText(filePath));
             }
             else
             {
                 var fileContent = JsonConvert.SerializeObject(config, Formatting.Indented);
-                File.WriteAllText(fileName, fileContent);
+                File.WriteAllText(filePath, fileContent);
                 Logger.Log("Config file not found. Creating default file. Please update it manually", LogLevel.Critical);
             }
             return config;
