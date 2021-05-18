@@ -169,6 +169,15 @@ namespace BaarsikTwitchBot.Resources {
         }
         
         /// <summary>
+        ///   Ищет локализованную строку, похожую на @{0}, ошибка получения информации по вашему заказу, попробуйте повторить через минуту.
+        /// </summary>
+        internal static string Reward_InternalException {
+            get {
+                return ResourceManager.GetString("Reward_InternalException", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Ищет локализованную строку, похожую на @{0}, видео длительностью менее одной минуты ({1}).
         /// </summary>
         internal static string Reward_LowerThanMinDuration {

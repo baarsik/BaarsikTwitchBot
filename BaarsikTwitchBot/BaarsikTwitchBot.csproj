@@ -32,6 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\Font Awesome 5 Free-Regular-400.otf" />
+    <None Remove="Fonts\Font Awesome 5 Free-Solid-900.otf" />
     <None Remove="Fonts\OpenSans-Bold.ttf" />
     <None Remove="Fonts\OpenSans-BoldItalic.ttf" />
     <None Remove="Fonts\OpenSans-Italic.ttf" />
@@ -117,6 +119,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Fonts\Font Awesome 5 Free-Regular-400.otf" />
+    <Resource Include="Fonts\Font Awesome 5 Free-Solid-900.otf" />
     <Resource Include="Fonts\OpenSans-Bold.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

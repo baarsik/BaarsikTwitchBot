@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Threading;
 using System.Threading.Tasks;
 using BaarsikTwitchBot.Domain.Enums;
 using BaarsikTwitchBot.Helpers;
@@ -108,20 +109,48 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
 
             var requestUnparsed = e.Message.Split(' ').FirstOrDefault()?.Trim();
 
-            Video video;
-            try
+            Video video = null;
+            var maximumRetries = 2;
+            for (var retry = 0; retry <= maximumRetries; retry++)
             {
-                video = await _youtubeClient.Videos.GetAsync(requestUnparsed);
-            }
-            catch (Exception ex)
-            {
-                if (ex is VideoUnplayableException or ArgumentException)
+                try
                 {
-                    _clientHelper.SendChannelMessage(SongRequestResources.Reward_VideoNotFound, e.DisplayName);
-                    return;
+                    video = await _youtubeClient.Videos.GetAsync(requestUnparsed);
+                    break;
                 }
-                _logger.Log($"Video parsing error for '{requestUnparsed}': {ex.Message}", LogLevel.Critical);
-                throw;
+                catch (Exception ex)
+                {
+                    if (ex is VideoUnplayableException or ArgumentException)
+                    {
+                        _clientHelper.SendChannelMessage(SongRequestResources.Reward_VideoNotFound, e.DisplayName);
+                        return;
+                    }
+
+                    if (retry < maximumRetries)
+                    {
+                        if (ex is FatalFailureException)
+                        {
+                            _logger.Log($"Video parsing error for '{requestUnparsed}' (attempt {retry + 1} out of {maximumRetries + 1}): {ex.Message}", LogLevel.Error);
+                            continue;
+                        }
+                    }
+                    else if (ex is FatalFailureException)
+                    {
+                        _logger.Log($"Maximum attempts reached. Cannot not parse video '{requestUnparsed}'", LogLevel.Error);
+                        _clientHelper.SendChannelMessage(SongRequestResources.Reward_InternalException, e.DisplayName);
+                        return;
+                    }
+
+                    _logger.Log($"Video parsing error for '{requestUnparsed}': {ex.Message}", LogLevel.Critical);
+                    throw;
+                }
+            }
+
+            if (video == null)
+            {
+                _logger.Log($"Unexpected error for '{requestUnparsed}': Video has not been parsed", LogLevel.Error);
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_InternalException, e.DisplayName);
+                return;
             }
 
             if (video.Engagement.ViewCount < _config.SongRequestManager.YoutubeMinimumViews)
