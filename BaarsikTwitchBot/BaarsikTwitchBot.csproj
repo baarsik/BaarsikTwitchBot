@@ -76,7 +76,7 @@
     <PackageReference Include="TwitchLib.Client" Version="3.2.1" />
     <PackageReference Include="TwitchLib.Client.Models" Version="3.2.1" />
     <PackageReference Include="TwitchLib.PubSub" Version="3.2.1" />
-    <PackageReference Include="YoutubeExplode" Version="5.1.9" />
+    <PackageReference Include="YoutubeExplode" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>

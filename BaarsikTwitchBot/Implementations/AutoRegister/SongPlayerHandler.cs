@@ -128,13 +128,14 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
 
                     if (retry < maximumRetries)
                     {
-                        if (ex is FatalFailureException)
+                        if (ex is RequestLimitExceededException)
                         {
-                            _logger.Log($"Video parsing error for '{requestUnparsed}' (attempt {retry + 1} out of {maximumRetries + 1}): {ex.Message}", LogLevel.Error);
+                            _logger.Log($"Video request limit exceeded for '{requestUnparsed}' (attempt {retry + 1} out of {maximumRetries + 1}): {ex.Message}", LogLevel.Error);
+                            Thread.Sleep(500);
                             continue;
                         }
                     }
-                    else if (ex is FatalFailureException)
+                    else if (ex is RequestLimitExceededException)
                     {
                         _logger.Log($"Maximum attempts reached. Cannot not parse video '{requestUnparsed}'", LogLevel.Error);
                         _clientHelper.SendChannelMessage(SongRequestResources.Reward_InternalException, e.DisplayName);
@@ -159,15 +160,16 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 return;
             }
 
-            if (Math.Abs(video.Duration.TotalMilliseconds) < 0.000001)
+            if (!video.Duration.HasValue || Math.Abs(video.Duration.Value.TotalMilliseconds) < 0.000001)
             {
                 _clientHelper.SendChannelMessage(SongRequestResources.Reward_StreamNotSupported, e.DisplayName);
                 return;
             }
 
-            if (video.Duration.TotalSeconds < 60)
+            var videoDuration = video.Duration.Value;
+            if (videoDuration.TotalSeconds < 60)
             {
-                var actualDuration = $"{(video.Duration.Hours > 0 ? $"{video.Duration.Hours:00}:" : string.Empty)}{video.Duration.Minutes:00}:{video.Duration.Seconds:00}";
+                var actualDuration = $"{(videoDuration.Hours > 0 ? $"{videoDuration.Hours:00}:" : string.Empty)}{videoDuration.Minutes:00}:{videoDuration.Seconds:00}";
                 _clientHelper.SendChannelMessage(SongRequestResources.Reward_LowerThanMinDuration, e.DisplayName, actualDuration);
                 return;
             }
@@ -176,12 +178,12 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 ? _config.SongRequestManager.MaximumLengthInSecondsPlus
                 : _config.SongRequestManager.MaximumLengthInSeconds;
 
-            if (video.Duration.TotalSeconds > maxLengthInSeconds)
+            if (videoDuration.TotalSeconds > maxLengthInSeconds)
             {
                 var minutes = maxLengthInSeconds / 60;
                 var seconds = maxLengthInSeconds % 60;
                 var maxDuration = $"{minutes:00}:{seconds:00}";
-                var actualDuration = $"{(video.Duration.Hours > 0 ? $"{video.Duration.Hours:00}:" : string.Empty)}{video.Duration.Minutes:00}:{video.Duration.Seconds:00}";
+                var actualDuration = $"{(videoDuration.Hours > 0 ? $"{videoDuration.Hours:00}:" : string.Empty)}{videoDuration.Minutes:00}:{videoDuration.Seconds:00}";
                 _clientHelper.SendChannelMessage(SongRequestResources.Reward_MaxDurationExceeded, e.DisplayName, maxDuration, actualDuration);
                 return;
             }
@@ -271,7 +273,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
 
             var queueItem = RequestQueue.First();
             var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(queueItem.YoutubeVideo.Id);
-            var audioFileUrl = streamManifest.GetAudioOnly().WithHighestBitrate().Url;
+            var audioFileUrl = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate().Url;
 
             await using var reader = new MediaFoundationReader(audioFileUrl);
             await using var channel = new WaveChannel32(reader)

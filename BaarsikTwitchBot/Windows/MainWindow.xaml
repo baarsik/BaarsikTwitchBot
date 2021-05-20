@@ -99,7 +99,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <Grid Margin="5" Width="75" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image Width="90" Height="67" Source="{Binding CurrentRequest.YoutubeVideo.Thumbnails.LowResUrl, Converter={StaticResource BitmapImageConverter}}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image Width="90" Height="67" Source="{Binding CurrentRequestThumbnailUrl, Converter={StaticResource BitmapImageConverter}}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0">
                     <TextBlock Text="{Binding CurrentRequest.YoutubeVideo.Title, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}"/>
