@@ -77,6 +77,9 @@ namespace BaarsikTwitchBot.Models
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)] 
             public int MaximumLengthInSeconds { get; set; } = 360;
 
+            [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
+            public int MaximumLengthInSecondsPlus { get; set; } = 450;
+
             [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)] 
             public bool DisplaySongName { get; set; } = true;
 

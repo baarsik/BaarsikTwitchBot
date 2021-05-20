@@ -5,10 +5,11 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 ## [1.2.0 WIP] - 2021-05-18
 ### Added
 - Unique chatters counter
+- Separate Song Request+ video duration limit
 ### Changed
 - Switched from SQL Server to SQLite
 ### Fixed
-- App crash on song request if the application fails to fetch YouTube video info
+- Crash when the application fails to fetch YouTube video info
 
 ## [1.1.0] - 2021-05-02
 ### Added

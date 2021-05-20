@@ -172,10 +172,14 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 return;
             }
 
-            if (video.Duration.TotalSeconds > _config.SongRequestManager.MaximumLengthInSeconds)
+            var maxLengthInSeconds = requestType == SongRequestType.Plus
+                ? _config.SongRequestManager.MaximumLengthInSecondsPlus
+                : _config.SongRequestManager.MaximumLengthInSeconds;
+
+            if (video.Duration.TotalSeconds > maxLengthInSeconds)
             {
-                var minutes = _config.SongRequestManager.MaximumLengthInSeconds / 60;
-                var seconds = _config.SongRequestManager.MaximumLengthInSeconds % 60;
+                var minutes = maxLengthInSeconds / 60;
+                var seconds = maxLengthInSeconds % 60;
                 var maxDuration = $"{minutes:00}:{seconds:00}";
                 var actualDuration = $"{(video.Duration.Hours > 0 ? $"{video.Duration.Hours:00}:" : string.Empty)}{video.Duration.Minutes:00}:{video.Duration.Seconds:00}";
                 _clientHelper.SendChannelMessage(SongRequestResources.Reward_MaxDurationExceeded, e.DisplayName, maxDuration, actualDuration);
