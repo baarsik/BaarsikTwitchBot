@@ -40,12 +40,12 @@ namespace BaarsikTwitchBot.Windows
         }
 
         public ILogger Logger { get; }
-        public DashboardViewModel Dashboard { get; } = new DashboardViewModel();
+        public DashboardViewModel Dashboard { get; } = new();
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
-            Title = $"Twitch Kit: @{_config.Channel.Name}{(_config.Channel.Name == _config.BotUser.Name ? string.Empty : $" (bot: @{_config.BotUser.Name})")}";
+            Title = $"StreamKiller: @{_config.Channel.Name}{(_config.Channel.Name == _config.BotUser.Name ? string.Empty : $" (bot: @{_config.BotUser.Name})")}";
             _botController.Initialize();
 
             Dashboard.CurrentFollowers = _apiHelper.BotUsers.Count(x => x.IsFollower);
@@ -64,6 +64,7 @@ namespace BaarsikTwitchBot.Windows
                 return;
 
             Dashboard.MessagesSent++;
+            Dashboard.AddChatter(e.ChatMessage.UserId);
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

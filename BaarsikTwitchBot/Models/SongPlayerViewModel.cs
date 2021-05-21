@@ -18,6 +18,7 @@ namespace BaarsikTwitchBot.Models
             {
                 _currentRequest = value;
                 OnPropertyChanged(nameof(CurrentRequest));
+                OnPropertyChanged(nameof(CurrentRequestThumbnailUrl));
                 OnPropertyChanged(nameof(Visibility));
             }
         }
@@ -43,7 +44,20 @@ namespace BaarsikTwitchBot.Models
                     return 0;
                 }
 
-                return (int) (CurrentRequestTimeSpan.Value.TotalMilliseconds / CurrentRequest.YoutubeVideo.Duration.TotalMilliseconds * 10000);
+                return (int) (CurrentRequestTimeSpan.Value.TotalMilliseconds / CurrentRequest.YoutubeVideo.Duration.Value.TotalMilliseconds * 10000);
+            }
+        }
+
+        public string CurrentRequestThumbnailUrl
+        {
+            get
+            {
+                if (CurrentRequest == null)
+                {
+                    return string.Empty;
+                }
+
+                return CurrentRequest.YoutubeVideo.Thumbnails.OrderBy(x => x.Resolution.Width).Select(x => x.Url).FirstOrDefault();
             }
         }
 

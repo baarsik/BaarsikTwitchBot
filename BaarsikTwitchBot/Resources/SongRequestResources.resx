@@ -153,6 +153,9 @@
   <data name="Reward_InsufficientViews" xml:space="preserve">
     <value>@{0}, видео имеет менее {1} просмотров</value>
   </data>
+  <data name="Reward_InternalException" xml:space="preserve">
+    <value>@{0}, ошибка получения информации по вашему заказу, попробуйте повторить через минуту</value>
+  </data>
   <data name="Reward_LowerThanMinDuration" xml:space="preserve">
     <value>@{0}, видео длительностью менее одной минуты ({1})</value>
   </data>

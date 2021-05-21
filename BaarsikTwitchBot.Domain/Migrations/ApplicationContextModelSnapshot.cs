@@ -3,7 +3,6 @@ using System;
 using BaarsikTwitchBot.Domain;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
-using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace BaarsikTwitchBot.Domain.Migrations
@@ -15,33 +14,31 @@ namespace BaarsikTwitchBot.Domain.Migrations
         {
 #pragma warning disable 612, 618
             modelBuilder
-                .HasAnnotation("ProductVersion", "3.1.9")
-                .HasAnnotation("Relational:MaxIdentifierLength", 128)
-                .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                .HasAnnotation("ProductVersion", "5.0.6");
 
             modelBuilder.Entity("BaarsikTwitchBot.Domain.Models.BotUser", b =>
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("DisplayName")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<bool>("IsBanned")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsBannedSongPlayer")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<bool>("IsFollower")
-                        .HasColumnType("bit");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Login")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("UserId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -51,13 +48,13 @@ namespace BaarsikTwitchBot.Domain.Migrations
             modelBuilder.Entity("BaarsikTwitchBot.Domain.Models.BotUserStatistics", b =>
                 {
                     b.Property<Guid>("Id")
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
-                    b.Property<long>("LicksReceived")
-                        .HasColumnType("bigint");
+                    b.Property<uint>("LicksReceived")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<long>("SpitsReceived")
-                        .HasColumnType("bigint");
+                    b.Property<uint>("SpitsReceived")
+                        .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
 
@@ -68,13 +65,13 @@ namespace BaarsikTwitchBot.Domain.Migrations
                 {
                     b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Limitation")
-                        .HasColumnType("int");
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("VideoId")
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -88,6 +85,11 @@ namespace BaarsikTwitchBot.Domain.Migrations
                         .HasForeignKey("BaarsikTwitchBot.Domain.Models.BotUserStatistics", "Id")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("BaarsikTwitchBot.Domain.Models.BotUser", b =>
+                {
+                    b.Navigation("Statistics");
                 });
 #pragma warning restore 612, 618
         }

@@ -10,7 +10,7 @@
         mc:Ignorable="d" WindowStartupLocation="CenterScreen"
         Height="600" Width="1000" MinWidth="1000" MinHeight="600"
         DataContext="{Binding RelativeSource={RelativeSource Self}}" IconVisibility="Collapsed"
-        Title="BaarsikTwitchBot" FontFamily="{StaticResource OpenSans}">
+        Title="StreamKiller" FontFamily="{StaticResource OpenSans}">
     <controls:AdonisWindow.TitleBarContent>
         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
             <!--Button Content="?"
@@ -48,6 +48,10 @@
                     <StackPanel Grid.Column="1" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock Text="{Binding Dashboard.MessagesSent, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center"/>
                         <TextBlock Text="messages sent" HorizontalAlignment="Center" FontSize="12"/>
+                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                            <TextBlock Text="{Binding Dashboard.UniqueChatters, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}" HorizontalAlignment="Center" FontSize="8"/>
+                            <TextBlock Text=" unique chatter(s)" HorizontalAlignment="Center" FontSize="8"/>
+                        </StackPanel>
                     </StackPanel>
                     <StackPanel Grid.Column="2" Grid.Row="0" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                         <TextBlock Text="{Binding Dashboard.NewSubscribers, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}" FontWeight="Bold" FontSize="24" HorizontalAlignment="Center"/>
@@ -95,7 +99,7 @@
             </Grid.ColumnDefinitions>
             <StackPanel Orientation="Horizontal" Grid.Column="0">
                 <Grid Margin="5" Width="75" Height="50" VerticalAlignment="Center" HorizontalAlignment="Center">
-                    <Image Width="90" Height="67" Source="{Binding CurrentRequest.YoutubeVideo.Thumbnails.LowResUrl, Converter={StaticResource BitmapImageConverter}}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image Width="90" Height="67" Source="{Binding CurrentRequestThumbnailUrl, Converter={StaticResource BitmapImageConverter}}" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                 </Grid>
                 <StackPanel Orientation="Vertical" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="5,0">
                     <TextBlock Text="{Binding CurrentRequest.YoutubeVideo.Title, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=?}"/>
@@ -108,12 +112,21 @@
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <TextBlock Grid.Column="0" Text="{Binding CurrentRequestTimeSpan, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=0:00, Converter={StaticResource TimeSpanConverter}}" FontSize="10"/>
-                <ProgressBar Grid.Column="1" HorizontalAlignment="Stretch" Margin="5,0" Minimum="0" Maximum="10000" Height="5"
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <!--StackPanel Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="0,0,0,5">
+                    <Button FontFamily="{StaticResource FontAwesome5}" Content="" FontSize="18" Margin="5,0" IsEnabled="False" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Padding="0"/>
+                    <Button FontFamily="{StaticResource FontAwesome5}" Content="" FontSize="20" Margin="5,0" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Padding="0"/>
+                    <Button FontFamily="{StaticResource FontAwesome5}" Content="" FontSize="18" Margin="5,0" VerticalAlignment="Center" Background="Transparent" BorderThickness="0" Padding="0"/>
+                </StackPanel-->
+                <TextBlock Grid.Column="0" Grid.Row="1" Text="{Binding CurrentRequestTimeSpan, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=0:00, Converter={StaticResource TimeSpanConverter}}" FontSize="10"/>
+                <ProgressBar Grid.Column="1" Grid.Row="1" HorizontalAlignment="Stretch" Margin="5,0" Minimum="0" Maximum="10000" Height="5"
                              Value="{Binding CurrentRequestProgress, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=0}"
                              adonisExtensions:ProgressBarExtension.IsProgressAnimationEnabled="False"
                              adonisExtensions:CornerRadiusExtension.CornerRadius="2"/>
-                <TextBlock Grid.Column="2" Text="{Binding CurrentRequest.YoutubeVideo.Duration, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=0:00, Converter={StaticResource TimeSpanConverter}}" FontSize="10"/>
+                <TextBlock Grid.Column="2" Grid.Row="1" Text="{Binding CurrentRequest.YoutubeVideo.Duration, Mode=OneWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=0:00, Converter={StaticResource TimeSpanConverter}}" FontSize="10"/>
             </Grid>
             <Slider Grid.Column="2" HorizontalAlignment="Right" Margin="5,0" Width="100" Minimum="0" Maximum="1000" IsTabStop="False" adonisExtensions:CornerRadiusExtension.CornerRadius="2"
                     Value="{Binding Volume, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged, FallbackValue=250}" />
