@@ -3,7 +3,7 @@ using System.IO;
 using BaarsikTwitchBot.Domain.Models;
 using YoutubeExplode.Videos;
 
-namespace BaarsikTwitchBot.Models
+namespace BaarsikTwitchBot.Core.Models
 {
     public class SongRequest
     {

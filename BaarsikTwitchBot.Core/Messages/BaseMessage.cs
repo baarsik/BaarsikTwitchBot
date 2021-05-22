@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text;
+using Newtonsoft.Json;
 
 namespace BaarsikTwitchBot.Core.Messages
 {
@@ -6,12 +7,18 @@ namespace BaarsikTwitchBot.Core.Messages
     {
         protected virtual string ToJson()
         {
-            return JsonConvert.SerializeObject(this);
+            var settings = new JsonSerializerSettings { TypeNameHandling = TypeNameHandling.All };
+            return JsonConvert.SerializeObject(this,settings);
+        }
+
+        public override string ToString()
+        {
+            return ToJson();
         }
 
         public virtual byte[] ToByteArray()
         {
-            return System.Text.Encoding.UTF8.GetBytes(ToJson());
+            return Encoding.UTF8.GetBytes(ToJson());
         }
     }
 }

@@ -8,6 +8,7 @@ using BaarsikTwitchBot.Controllers;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Interfaces;
+using BaarsikTwitchBot.Messaging.Sender;
 using BaarsikTwitchBot.Models;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
@@ -26,13 +27,14 @@ namespace BaarsikTwitchBot.Windows
         private readonly JsonConfig _config;
 
         public MainWindow(BotController botController, ILogger logger, TwitchApiHelper apiHelper, TwitchClient twitchClient,
-            SongPlayerHandler songPlayerHandler, JsonConfig config)
+            SongPlayerHandler songPlayerHandler, JsonConfig config, IMessageSender messageSender)
         {
             _botController = botController;
             _apiHelper = apiHelper;
             _twitchClient = twitchClient;
             _songPlayerHandler = songPlayerHandler;
             _config = config;
+            _messageSender = messageSender;
             Logger = logger;
 
             this.Loaded += OnLoaded;

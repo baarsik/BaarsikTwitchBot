@@ -1,4 +1,4 @@
-﻿namespace BaarsikTwitchBot.Models
+﻿namespace BaarsikTwitchBot.Core.Models
 {
     public enum SongRequestType
     {

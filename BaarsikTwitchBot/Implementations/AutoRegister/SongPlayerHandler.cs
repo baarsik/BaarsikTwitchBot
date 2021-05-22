@@ -4,6 +4,7 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
+using BaarsikTwitchBot.Core.Models;
 using BaarsikTwitchBot.Domain.Enums;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;

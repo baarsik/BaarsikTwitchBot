@@ -5,6 +5,7 @@ using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using BaarsikTwitchBot.Annotations;
+using BaarsikTwitchBot.Core.Models;
 
 namespace BaarsikTwitchBot.Models
 {

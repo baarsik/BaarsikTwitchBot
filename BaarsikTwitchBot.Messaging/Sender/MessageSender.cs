@@ -51,7 +51,7 @@ namespace BaarsikTwitchBot.Messaging.Sender
             catch (Exception ex)
             {
                 //TODO add logging
-                throw ex;
+                throw;
             }
         }
 

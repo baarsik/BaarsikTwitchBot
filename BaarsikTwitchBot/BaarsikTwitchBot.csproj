@@ -85,6 +85,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\BaarsikTwitchBot.Domain\BaarsikTwitchBot.Domain.csproj" />
+    <ProjectReference Include="..\BaarsikTwitchBot.Messaging\BaarsikTwitchBot.Messaging.csproj" />
   </ItemGroup>
 
   <ItemGroup>

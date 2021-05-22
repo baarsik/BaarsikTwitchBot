@@ -30,7 +30,6 @@ namespace BaarsikTwitchBot.UI
             services.AddControllersWithViews();
             services.AddSignalR();
             
-         
             var serviceClientSettingsConfig = Configuration.GetSection("RabbitMq");
             services.Configure<RabbitMqConfiguration>(serviceClientSettingsConfig);
 

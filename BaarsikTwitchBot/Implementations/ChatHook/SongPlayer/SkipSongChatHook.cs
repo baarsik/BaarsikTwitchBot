@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using BaarsikTwitchBot.Core.Models;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Interfaces;

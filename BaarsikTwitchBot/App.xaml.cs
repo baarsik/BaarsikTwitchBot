@@ -10,6 +10,7 @@ using BaarsikTwitchBot.Domain;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Implementations;
 using BaarsikTwitchBot.Interfaces;
+using BaarsikTwitchBot.Messaging.Sender;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Web;
 using BaarsikTwitchBot.Windows;
@@ -163,6 +164,11 @@ namespace BaarsikTwitchBot
             services.AddScoped<MainWindow>();
 
             ServiceProvider = services.BuildServiceProvider();
+            
+            // TODO Ask Mark where is Configuration
+            // var serviceClientSettingsConfig = Configuration.GetSection("RabbitMq");
+            // services.Configure<RabbitMqConfiguration>(serviceClientSettingsConfig);
+            // services.AddSingleton<IMessageSender, MessageSender>();
 
             IsSuccessful = true;
         }
