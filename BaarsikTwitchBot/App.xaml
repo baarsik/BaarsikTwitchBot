@@ -13,6 +13,7 @@
             </ResourceDictionary.MergedDictionaries>
             <FontFamily x:Key="OpenSans">pack://application:,,,/Fonts/#Open Sans</FontFamily>
             <FontFamily x:Key="Play">pack://application:,,,/Fonts/#Play</FontFamily>
+            <FontFamily x:Key="FontAwesome5">pack://application:,,,/Fonts/#Font Awesome 5 Free</FontFamily>
             <conv:BitmapImageConverter x:Key="BitmapImageConverter"/>
             <conv:TimeSpanConverter x:Key="TimeSpanConverter"/>
         </ResourceDictionary>

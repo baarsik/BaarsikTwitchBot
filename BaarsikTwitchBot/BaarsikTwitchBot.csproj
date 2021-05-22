@@ -32,6 +32,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Remove="Fonts\Font Awesome 5 Free-Regular-400.otf" />
+    <None Remove="Fonts\Font Awesome 5 Free-Solid-900.otf" />
     <None Remove="Fonts\OpenSans-Bold.ttf" />
     <None Remove="Fonts\OpenSans-BoldItalic.ttf" />
     <None Remove="Fonts\OpenSans-Italic.ttf" />
@@ -56,13 +58,13 @@
     <PackageReference Include="Microsoft.AspNetCore.SignalR" Version="1.1.0" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.4">
+    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="5.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="5.0.6">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
     </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer" Version="5.0.4" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.SqlServer.Design" Version="1.1.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="5.0.6" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite.Design" Version="1.1.6" />
     <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="5.0.1" />
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="5.0.0" />
     <PackageReference Include="Microsoft.Extensions.Logging.Console" Version="5.0.0" />
@@ -78,7 +80,7 @@
     <PackageReference Include="TwitchLib.Client" Version="3.2.1" />
     <PackageReference Include="TwitchLib.Client.Models" Version="3.2.1" />
     <PackageReference Include="TwitchLib.PubSub" Version="3.2.1" />
-    <PackageReference Include="YoutubeExplode" Version="5.1.9" />
+    <PackageReference Include="YoutubeExplode" Version="6.0.0" />
   </ItemGroup>
 
   <ItemGroup>
@@ -121,6 +123,8 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Fonts\Font Awesome 5 Free-Regular-400.otf" />
+    <Resource Include="Fonts\Font Awesome 5 Free-Solid-900.otf" />
     <Resource Include="Fonts\OpenSans-Bold.ttf">
       <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </Resource>

@@ -7,7 +7,6 @@ using BaarsikTwitchBot.Domain.Models;
 using BaarsikTwitchBot.Extensions;
 using Microsoft.EntityFrameworkCore;
 using TwitchLib.Api.Helix.Models.Users.GetUsers;
-using YoutubeExplode.Videos;
 
 namespace BaarsikTwitchBot.Helpers
 {
