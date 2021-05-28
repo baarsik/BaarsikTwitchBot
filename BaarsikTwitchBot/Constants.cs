@@ -16,6 +16,12 @@
         public static class Twitch
         {
             public const int FollowerRequestLimit = 100;
+
+            public static class Scopes
+            {
+                public const string BotUser = "chat:read chat:edit whispers:edit bits:read user:read:broadcast channel:moderate";
+                public const string Channel = "chat:read chat:edit whispers:edit bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:manage:redemptions channel:moderate";
+            }
         }
 
         public static class Obfuscation

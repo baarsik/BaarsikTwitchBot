@@ -8,21 +8,21 @@ namespace BaarsikTwitchBot.Models
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public ChannelCredentials BotUser { get; set; } = new()
         {
-            Scopes = "chat:read chat:edit whispers:edit bits:read user:read:broadcast channel:moderate"
+            Scopes = Constants.Twitch.Scopes.BotUser
         };
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public ChannelCredentials Channel { get; set; } = new()
         {
             Name = Constants.User.ChannelName,
-            Scopes = "chat:read chat:edit whispers:edit bits:read channel:read:hype_train channel:read:subscriptions user:read:broadcast channel:read:redemptions channel:manage:redemptions channel:moderate"
+            Scopes = Constants.Twitch.Scopes.Channel
         };
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-        public OAuthCredentials OAuth { get; set; } = new OAuthCredentials();
+        public OAuthCredentials OAuth { get; set; } = new();
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
-        public ChatSettings Chat { get; set; } = new ChatSettings();
+        public ChatSettings Chat { get; set; } = new();
 
         [Obfuscation(Feature = Constants.Obfuscation.Renaming, Exclude = true)]
         public SongRequestManagerSettings SongRequestManager { get; set; } = new();

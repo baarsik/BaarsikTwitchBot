@@ -5,8 +5,13 @@ using System.Threading.Tasks;
 using System.Windows;
 using BaarsikTwitchBot.Annotations;
 using BaarsikTwitchBot.Controllers;
+using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Implementations.AutoRegister;
+using BaarsikTwitchBot.Models;
 using Microsoft.Extensions.DependencyInjection;
+using MessageBox = AdonisUI.Controls.MessageBox;
+using MessageBoxButton = AdonisUI.Controls.MessageBoxButton;
+using MessageBoxImage = AdonisUI.Controls.MessageBoxImage;
 
 namespace BaarsikTwitchBot.Windows
 {
@@ -27,18 +32,32 @@ namespace BaarsikTwitchBot.Windows
             InitializeComponent();
         }
 
-        private void OnContentRendered(object sender, EventArgs e)
+        private async void OnContentRendered(object sender, EventArgs e)
         {
-            var uiScheduler = TaskScheduler.FromCurrentSynchronizationContext();
-            Task.Factory.StartNew(() =>
+            var validationResult =
+                await _botController.ValidateChannelCredentials() &&
+                await _botController.ValidateBotUserCredentials();
+            
+            if (validationResult)
+            {
+                _botController.Initialize();
+                _songPlayerHandler.Initialize();
+                OpenNextWindow<MainWindow>();
+            }
+            else
+            {
+                this.Hide();
+                switch (_botController.InitializationStatus)
                 {
-                    _botController.Initialize();
-                    _songPlayerHandler.Initialize();
-                })
-                .ContinueWith(task =>
-                {
-                    OpenNextWindow<MainWindow>();
-                }, uiScheduler);
+                    case BotInitializationStatus.ChannelCredentialsValidated - 1:
+                        MessageBox.Show("Channel credentials invalid", "StreamKiller - Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                    case BotInitializationStatus.BotUserCredentialsValidated - 1:
+                        MessageBox.Show("Bot user credentials invalid", "StreamKiller - Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
+                        break;
+                }
+                this.Close();
+            }
         }
 
         private string _loadingText = "Loading";

@@ -4,6 +4,7 @@ using System.Data;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
+using System.Threading.Tasks;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Interfaces;
 using BaarsikTwitchBot.Models;
@@ -18,30 +19,79 @@ namespace BaarsikTwitchBot.Controllers
     {
         private readonly TwitchClient _twitchClient;
         private readonly TwitchApiHelper _apiHelper;
+        private readonly JsonConfig _config;
         private readonly IList<IChatHook> _chatHooks = new List<IChatHook>();
         private readonly IServiceProvider _serviceProvider;
         private readonly ILogger _logger;
 
-        public BotController(TwitchClient twitchClient, TwitchApiHelper apiHelper, IServiceProvider serviceProvider, ILogger logger)
+        public BotController(TwitchClient twitchClient, TwitchApiHelper apiHelper, JsonConfig config, IServiceProvider serviceProvider, ILogger logger)
         {
             _serviceProvider = serviceProvider;
             _logger = logger;
             _twitchClient = twitchClient;
             _apiHelper = apiHelper;
+            _config = config;
         }
 
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
+        public async Task<bool> ValidateChannelCredentials()
+        {
+            var isTokenValid = await _apiHelper.IsTokenValidAsync(_config.Channel.OAuth, Constants.Twitch.Scopes.Channel);
+            if (!isTokenValid)
+            {
+                _logger.Log("Channel credentials are invalid", LogLevel.Error);
+                return false;
+            }
+
+            if (InitializationStatus < BotInitializationStatus.ChannelCredentialsValidated)
+            {
+                InitializationStatus = BotInitializationStatus.ChannelCredentialsValidated;
+            }
+
+            return true;
+        }
+
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
+        public async Task<bool> ValidateBotUserCredentials()
+        {
+            if (InitializationStatus < BotInitializationStatus.BotUserCredentialsValidated - 1)
+            {
+                throw new Exception($"Execute {nameof(ValidateChannelCredentials)} method first");
+            }
+
+            var isTokenValid = await _apiHelper.IsTokenValidAsync(_config.BotUser.OAuth, Constants.Twitch.Scopes.BotUser);
+            if (!isTokenValid)
+            {
+                _logger.Log("Bot user credentials are invalid", LogLevel.Error);
+                return false;
+            }
+
+            if (InitializationStatus < BotInitializationStatus.BotUserCredentialsValidated)
+            {
+                InitializationStatus = BotInitializationStatus.BotUserCredentialsValidated;
+            }
+
+            return true;
+        }
+
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         public void Initialize()
         {
-            if (IsInitialized) return;
+            if (InitializationStatus < BotInitializationStatus.Initialized - 1)
+            {
+                throw new Exception($"Execute {nameof(ValidateBotUserCredentials)} method first");
+            }
 
             InitTwitchClient();
             InitChatHooks();
             InitAutoRegisteredClasses();
 
-            IsInitialized = true;
+            InitializationStatus = BotInitializationStatus.Initialized;
         }
 
-        public bool IsInitialized { get; private set; }
+        public BotInitializationStatus InitializationStatus { get; private set; }
+        public bool IsConnected { get; private set; }
+        private int ConnectionAttempts { get; set; }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void OnMessageReceived(object sender, OnMessageReceivedArgs e)
@@ -110,16 +160,24 @@ namespace BaarsikTwitchBot.Controllers
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void InitTwitchClient()
         {
-            _twitchClient.OnConnected += (sender, args) => _logger.Log($"Connected to '{Constants.User.ChannelName}' chat as '{args.BotUsername}'", LogLevel.Information);
-            _twitchClient.OnConnectionError += (sender, args) => _logger.Log($"Failed to connect: {args.Error.Message}", LogLevel.Error);
+            _twitchClient.OnConnected += (sender, args) =>
+            {
+                IsConnected = true;
+                ConnectionAttempts = 0;
+                _logger.Log($"Connected to '{Constants.User.ChannelName}' chat as '{args.BotUsername}'", LogLevel.Information);
+            };
+            _twitchClient.OnConnectionError += (sender, args) =>
+            {
+                IsConnected = false;
+                _logger.Log($"Failed to connect: {args.Error.Message}", LogLevel.Error);
+            };
             _twitchClient.OnDisconnected += (sender, args) =>
             {
-                _logger.Log("Bot has been disconnected from IRC. Attempting reconnect", LogLevel.Warning);
-                while (!_twitchClient.IsConnected)
-                {
-                    Thread.Sleep(1000);
-                    _twitchClient.Connect();
-                }
+                IsConnected = false;
+                _logger.Log("Bot has been disconnected from IRC", LogLevel.Warning);
+                Thread.Sleep(5000);
+                _logger.Log($"IRC reconnection attempt #{++ConnectionAttempts}", LogLevel.Information);
+                _twitchClient.Reconnect();
             };
             _twitchClient.OnMessageReceived += OnMessageReceived;
 

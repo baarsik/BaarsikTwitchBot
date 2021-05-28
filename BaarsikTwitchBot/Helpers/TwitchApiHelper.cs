@@ -127,6 +127,7 @@ namespace BaarsikTwitchBot.Helpers
             return BotUsers.FirstOrDefault(x => x.UserId == userId);
         }
 
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         public async Task SetRewardRedemptionStatusAsync(string rewardId, string redemptionId, CustomRewardRedemptionStatus status)
         {
             try
@@ -139,6 +140,16 @@ namespace BaarsikTwitchBot.Helpers
             {
                 _logger.Log(e.Message, LogLevel.Error);
             }
+        }
+
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
+        public async Task<bool> IsTokenValidAsync(string accessToken, string scopes)
+        {
+            var tokenRoot = await _twitchApi.V5.Root.GetRootAsync(accessToken, _config.OAuth.ClientID);
+            var isValid = tokenRoot.Token.Valid
+                          && scopes.Split(' ').All(x => tokenRoot.Token.Auth.Scopes.Contains(x));
+
+            return isValid;
         }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
