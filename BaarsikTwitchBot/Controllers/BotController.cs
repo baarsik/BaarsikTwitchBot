@@ -77,9 +77,12 @@ namespace BaarsikTwitchBot.Controllers
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         public void Initialize()
         {
-            if (InitializationStatus < BotInitializationStatus.Initialized - 1)
+            switch (InitializationStatus)
             {
-                throw new Exception($"Execute {nameof(ValidateBotUserCredentials)} method first");
+                case >= BotInitializationStatus.Initialized:
+                    return;
+                case < BotInitializationStatus.Initialized - 1:
+                    throw new Exception($"Execute {nameof(ValidateBotUserCredentials)} method first");
             }
 
             InitTwitchClient();
@@ -179,8 +182,11 @@ namespace BaarsikTwitchBot.Controllers
                 _logger.Log($"IRC reconnection attempt #{++ConnectionAttempts}", LogLevel.Information);
                 _twitchClient.Reconnect();
             };
+            _twitchClient.OnFailureToReceiveJoinConfirmation += (sender, args) =>
+            {
+                throw new Exception();
+            };
             _twitchClient.OnMessageReceived += OnMessageReceived;
-
             _twitchClient.Connect();
         }
 

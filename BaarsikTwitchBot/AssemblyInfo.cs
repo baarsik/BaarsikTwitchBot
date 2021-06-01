@@ -11,6 +11,6 @@ ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionar
 // app, or any theme specific resource dictionaries)
 )]
 
-[assembly: AssemblyVersion("1.3.0.87")]
-[assembly: AssemblyFileVersion("1.3.0.87")]
+[assembly: AssemblyVersion("1.3.0.92")]
+[assembly: AssemblyFileVersion("1.3.0.92")]
 
