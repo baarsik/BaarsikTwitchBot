@@ -338,5 +338,41 @@ namespace BaarsikTwitchBot.Resources {
                 return ResourceManager.GetString("SongNameChatHook_Playing", resourceCulture);
             }
         }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на @{0}, у вас нет заказанных треков.
+        /// </summary>
+        internal static string WhenSongChatHook_NoRequests {
+            get {
+                return ResourceManager.GetString("WhenSongChatHook_NoRequests", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на @{0}, ваш трек играет прямо сейчас.
+        /// </summary>
+        internal static string WhenSongChatHook_Now {
+            get {
+                return ResourceManager.GetString("WhenSongChatHook_Now", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на @{0}, в текущий момент музыка на паузе.
+        /// </summary>
+        internal static string WhenSongChatHook_Paused {
+            get {
+                return ResourceManager.GetString("WhenSongChatHook_Paused", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   Ищет локализованную строку, похожую на @{0}, ваш трек на {1} месте в очереди (осталось {2}).
+        /// </summary>
+        internal static string WhenSongChatHook_RequestData {
+            get {
+                return ResourceManager.GetString("WhenSongChatHook_RequestData", resourceCulture);
+            }
+        }
     }
 }

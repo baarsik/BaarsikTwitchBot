@@ -48,7 +48,7 @@ namespace BaarsikTwitchBot.Helpers
 
             pubSub.OnFollow += PubSubOnChannelFollow;
             pubSub.OnChannelSubscription += PubSubOnChannelSubscription;
-            pubSub.OnRewardRedeemed += PubSubOnChannelRewardRedeemed;
+            pubSub.OnChannelPointsRewardRedeemed += PubSubOnOnChannelPointsRewardRedeemed;
            
             pubSub.OnListenResponse += (sender, args) =>
             {
@@ -62,7 +62,7 @@ namespace BaarsikTwitchBot.Helpers
                 pubSub.ListenToVideoPlayback(_config.Channel.Name);
                 pubSub.ListenToFollows(StreamerUser.UserId);
                 pubSub.ListenToSubscriptions(StreamerUser.UserId);
-                pubSub.ListenToRewards(StreamerUser.UserId);
+                pubSub.ListenToChannelPoints(StreamerUser.UserId);
                 pubSub.SendTopics(_config.Channel.OAuth);
             };
             pubSub.OnPubSubServiceClosed += (sender, args) =>
@@ -83,7 +83,7 @@ namespace BaarsikTwitchBot.Helpers
 
         public EventHandler<User> OnFollow;
         public EventHandler<OnChannelSubscriptionArgs> OnChannelSubscription;
-        public EventHandler<OnRewardRedeemedArgs> OnRewardRedeemed;
+        public EventHandler<OnChannelPointsRewardRedeemedArgs> OnRewardRedeemed;
 
         public BotUser StreamerUser { get; private set; }
         public List<BotUser> BotUsers { get; private set; }
@@ -257,16 +257,16 @@ namespace BaarsikTwitchBot.Helpers
         }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
-        private void PubSubOnChannelRewardRedeemed(object sender, OnRewardRedeemedArgs e)
+        private void PubSubOnOnChannelPointsRewardRedeemed(object sender, OnChannelPointsRewardRedeemedArgs e)
         {
-            if (e.Status != Constants.RewardStatus.Unfulfilled)
+            if (e.RewardRedeemed.Redemption.Status != Constants.RewardStatus.Unfulfilled)
                 return;
 
-            var isBanned = BotUsers.Where(x => x.Login == e.Login).Select(x => x.IsBanned).FirstOrDefault();
+            var isBanned = BotUsers.Where(x => x.UserId == e.RewardRedeemed.Redemption.User.Id).Select(x => x.IsBanned).FirstOrDefault();
             if (isBanned)
                 return;
 
-            _logger.Log($"Reward '{e.RewardTitle}' redeemed at '{StreamerUser.Login}' {e.Login}. Message: \"{e.Message}\"", LogLevel.Information);
+            _logger.Log($"Reward '{e.RewardRedeemed.Redemption.Reward.Title}' redeemed at '{StreamerUser.Login}' {e.RewardRedeemed.Redemption.User.Login}. Message: \"{e.RewardRedeemed.Redemption.UserInput}\"", LogLevel.Information);
             OnRewardRedeemed?.Invoke(sender, e);
         }
         #endregion

@@ -210,4 +210,16 @@
   <data name="SongNameChatHook_Playing" xml:space="preserve">
     <value>Играет трек '{0}' от @{1}</value>
   </data>
+  <data name="WhenSongChatHook_NoRequests" xml:space="preserve">
+    <value>@{0}, у вас нет заказанных треков</value>
+  </data>
+  <data name="WhenSongChatHook_Now" xml:space="preserve">
+    <value>@{0}, ваш трек играет прямо сейчас</value>
+  </data>
+  <data name="WhenSongChatHook_Paused" xml:space="preserve">
+    <value>@{0}, в текущий момент музыка на паузе</value>
+  </data>
+  <data name="WhenSongChatHook_RequestData" xml:space="preserve">
+    <value>@{0}, ваш трек на {1} месте в очереди (осталось {2})</value>
+  </data>
 </root>

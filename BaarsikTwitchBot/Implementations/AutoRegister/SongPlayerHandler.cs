@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
 using System.Reflection;
 using System.Threading;
 using System.Threading.Tasks;
@@ -46,8 +47,9 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
         public bool IsPaused { get; set; }
         public bool IsSkipping { get; set; }
         public float Volume { get; set; }
-        public List<SongRequest> RequestQueue { get; set; } = new List<SongRequest>();
+        public List<SongRequest> RequestQueue { get; set; } = new();
         public SongRequest CurrentRequest => RequestQueue.FirstOrDefault();
+        public TimeSpan CurrentRequestTimeSpan { get; set; } = TimeSpan.Zero;
         public bool IsPlayerActive => IsInitialized && IsPlaying && !IsSkipping && CurrentRequest != null;
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
@@ -88,26 +90,27 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
         }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
-        private async void OnRewardRedeemed(object sender, OnRewardRedeemedArgs e)
+        private async void OnRewardRedeemed(object sender, OnChannelPointsRewardRedeemedArgs e)
         {
             if (!IsInitialized || !_config.SongRequestManager.Enabled) return;
 
-            var requestType = e.RewardTitle == _config.SongRequestManager.RewardTitlePlus
+            var reward = e.RewardRedeemed.Redemption.Reward;
+            var requestType = reward.Title == _config.SongRequestManager.RewardTitlePlus
                 ? SongRequestType.Plus
                 : SongRequestType.Default;
 
-            if (requestType != SongRequestType.Plus && e.RewardTitle != _config.SongRequestManager.RewardTitleDefault)
+            if (requestType != SongRequestType.Plus && reward.Title != _config.SongRequestManager.RewardTitleDefault)
             {
                 return;
             }
-
-            var user = _twitchApi.GetFollowerByLogin(e.Login) ?? await _twitchApi.GetUserByNameAsync(e.Login);
+            
+            var user = _twitchApi.GetFollowerById(e.RewardRedeemed.Redemption.User.Id);
             if (user.IsBannedSongPlayer)
             {
                 return;
             }
 
-            var requestUnparsed = e.Message.Split(' ').FirstOrDefault()?.Trim();
+            var requestUnparsed = e.RewardRedeemed.Redemption.UserInput.Split(' ').FirstOrDefault()?.Trim();
 
             Video video = null;
             var maximumRetries = 2;
@@ -122,7 +125,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 {
                     if (ex is VideoUnplayableException or ArgumentException)
                     {
-                        _clientHelper.SendChannelMessage(SongRequestResources.Reward_VideoNotFound, e.DisplayName);
+                        _clientHelper.SendChannelMessage(SongRequestResources.Reward_VideoNotFound, user.DisplayName);
                         return;
                     }
 
@@ -138,7 +141,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                     else if (ex is RequestLimitExceededException)
                     {
                         _logger.Log($"Maximum attempts reached. Cannot not parse video '{requestUnparsed}'", LogLevel.Error);
-                        _clientHelper.SendChannelMessage(SongRequestResources.Reward_InternalException, e.DisplayName);
+                        _clientHelper.SendChannelMessage(SongRequestResources.Reward_InternalException, user.DisplayName);
                         return;
                     }
 
@@ -150,19 +153,19 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             if (video == null)
             {
                 _logger.Log($"Unexpected error for '{requestUnparsed}': Video has not been parsed", LogLevel.Error);
-                _clientHelper.SendChannelMessage(SongRequestResources.Reward_InternalException, e.DisplayName);
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_InternalException, user.DisplayName);
                 return;
             }
 
             if (video.Engagement.ViewCount < _config.SongRequestManager.YoutubeMinimumViews)
             {
-                _clientHelper.SendChannelMessage(SongRequestResources.Reward_InsufficientViews, e.DisplayName, _config.SongRequestManager.YoutubeMinimumViews);
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_InsufficientViews, user.DisplayName, _config.SongRequestManager.YoutubeMinimumViews);
                 return;
             }
 
             if (!video.Duration.HasValue || Math.Abs(video.Duration.Value.TotalMilliseconds) < 0.000001)
             {
-                _clientHelper.SendChannelMessage(SongRequestResources.Reward_StreamNotSupported, e.DisplayName);
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_StreamNotSupported, user.DisplayName);
                 return;
             }
 
@@ -170,7 +173,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             if (videoDuration.TotalSeconds < 60)
             {
                 var actualDuration = $"{(videoDuration.Hours > 0 ? $"{videoDuration.Hours:00}:" : string.Empty)}{videoDuration.Minutes:00}:{videoDuration.Seconds:00}";
-                _clientHelper.SendChannelMessage(SongRequestResources.Reward_LowerThanMinDuration, e.DisplayName, actualDuration);
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_LowerThanMinDuration, user.DisplayName, actualDuration);
                 return;
             }
 
@@ -184,7 +187,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 var seconds = maxLengthInSeconds % 60;
                 var maxDuration = $"{minutes:00}:{seconds:00}";
                 var actualDuration = $"{(videoDuration.Hours > 0 ? $"{videoDuration.Hours:00}:" : string.Empty)}{videoDuration.Minutes:00}:{videoDuration.Seconds:00}";
-                _clientHelper.SendChannelMessage(SongRequestResources.Reward_MaxDurationExceeded, e.DisplayName, maxDuration, actualDuration);
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_MaxDurationExceeded, user.DisplayName, maxDuration, actualDuration);
                 return;
             }
 
@@ -192,13 +195,13 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             switch (songInfo.Limitation)
             {
                 case SongLimitationType.Banned:
-                    _clientHelper.SendChannelMessage(SongRequestResources.Reward_SongIsBanned, e.DisplayName);
+                    _clientHelper.SendChannelMessage(SongRequestResources.Reward_SongIsBanned, user.DisplayName);
                     return;
                 case SongLimitationType.Plus when requestType != SongRequestType.Plus:
                     var responseTemplate = _config.SongRequestManager.DisplaySongName
                         ? SongRequestResources.Reward_RequestInPlusOnly_SongName
                         : SongRequestResources.Reward_RequestInPlusOnly_NoSongName;
-                    _clientHelper.SendChannelMessage(responseTemplate, e.DisplayName, video.Title);
+                    _clientHelper.SendChannelMessage(responseTemplate, user.DisplayName, video.Title);
                     return;
             }
 
@@ -211,7 +214,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                         var responseTemplate = _config.SongRequestManager.DisplaySongName
                             ? SongRequestResources.Reward_SongInQueue_SongName
                             : SongRequestResources.Reward_SongInQueue_NoSongName;
-                        _clientHelper.SendChannelMessage(responseTemplate, e.DisplayName, video.Title);
+                        _clientHelper.SendChannelMessage(responseTemplate, user.DisplayName, video.Title);
                         return;
                 }
             }
@@ -220,19 +223,24 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             {
                 await _youtubeClient.Videos.Streams.GetManifestAsync(video.Id);
             }
-            catch (VideoUnplayableException)
+            catch (Exception ex) when (ex is VideoUnavailableException or HttpRequestException)
             {
-                _clientHelper.SendChannelMessage(SongRequestResources.Reward_SongUnplayable, e.DisplayName);
+                _clientHelper.SendChannelMessage(SongRequestResources.Reward_SongUnplayable, user.DisplayName);
                 return;
+            }
+            catch (Exception ex)
+            {
+                _logger.Log($"Exception occurred: {ex.Message}", LogLevel.Critical);
+                throw;
             }
 
             var songRequest = new SongRequest
             { 
-                RewardId = e.RewardId,
-                RedemptionId = e.RedemptionId,
+                RewardId = Guid.Parse(reward.Id),
+                RedemptionId = Guid.Parse(e.RewardRedeemed.Redemption.Id),
                 YoutubeVideo = video,
                 RequestType = requestType,
-                RequestDate = e.TimeStamp,
+                RequestDate = e.RewardRedeemed.Timestamp,
                 User = user
             };
             RequestQueue.Add(songRequest);
@@ -262,6 +270,8 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             if (IsPlaying)
                 return;
 
+            CurrentRequestTimeSpan = TimeSpan.Zero;
+
             if (RequestQueue.Count == 0)
             {
                 IsPlaying = false;
@@ -275,7 +285,31 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
             var streamManifest = await _youtubeClient.Videos.Streams.GetManifestAsync(queueItem.YoutubeVideo.Id);
             var audioFileUrl = streamManifest.GetAudioOnlyStreams().GetWithHighestBitrate().Url;
 
-            await using var reader = new MediaFoundationReader(audioFileUrl);
+            MediaFoundationReader reader;
+            var attempts = 0;
+            while (true)
+            {
+                try
+                {
+                    while (true)
+                    {
+                        reader = new MediaFoundationReader(audioFileUrl);
+                        break;
+                    }
+                }
+                catch (UnauthorizedAccessException)
+                {
+                    if (attempts == 5)
+                        throw;
+
+                    attempts++;
+                    _logger.Log($"UnauthorizedAccessException for {queueItem.YoutubeVideo.Id}: {attempts}/5", LogLevel.Error);
+                    Thread.Sleep(50);
+                    continue;
+                }
+                break;
+            }
+
             await using var channel = new WaveChannel32(reader)
             {
                 Volume = Volume,
@@ -292,7 +326,7 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
 
             OnPlayStarted?.Invoke(queueItem);
 
-            while (waveOut.PlaybackState == PlaybackState.Playing || waveOut.PlaybackState == PlaybackState.Paused)
+            while (waveOut.PlaybackState is PlaybackState.Playing or PlaybackState.Paused)
             {
                 if (IsSkipping)
                 {
@@ -303,7 +337,8 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                 switch (waveOut.PlaybackState)
                 {
                     case PlaybackState.Playing:
-                        OnCurrentSongTimeSpanUpdated?.Invoke(queueItem, waveOut.GetPositionTimeSpan());
+                        CurrentRequestTimeSpan = waveOut.GetPositionTimeSpan();
+                        OnCurrentSongTimeSpanUpdated?.Invoke(queueItem, CurrentRequestTimeSpan);
                         if (Math.Abs(Volume - channel.Volume) > 0.001f)
                         {
                             channel.Volume = Volume;
@@ -325,15 +360,18 @@ namespace BaarsikTwitchBot.Implementations.AutoRegister
                         break;
                     default: throw new ArgumentOutOfRangeException(nameof(waveOut.PlaybackState));
                 }
-                System.Threading.Thread.Sleep(100);
+                Thread.Sleep(100);
             }
 
             RequestQueue.RemoveAt(0);
-            await _twitchApi.SetRewardRedemptionStatusAsync(queueItem.RewardId.ToString(), queueItem.RedemptionId.ToString(), CustomRewardRedemptionStatus.FULFILLED);
+            // ToDo: re-enable this line once custom rewards are created by a bot
+            // await _twitchApi.SetRewardRedemptionStatusAsync(queueItem.RewardId.ToString(), queueItem.RedemptionId.ToString(), CustomRewardRedemptionStatus.FULFILLED);
             OnPlayFinished?.Invoke(queueItem, RequestQueue.FirstOrDefault());
             IsPlaying = false;
             IsPaused = false;
             Play();
+
+            await reader.DisposeAsync();
         }
     }
 }
