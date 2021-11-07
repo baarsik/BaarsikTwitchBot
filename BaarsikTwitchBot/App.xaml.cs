@@ -159,8 +159,12 @@ namespace BaarsikTwitchBot
             services.Configure<ConsoleLifetimeOptions>(options => options.SuppressStatusMessages = true);
 
             services.AddSingleton<BotController>();
+
+            #region WPF Windows (Scoped)
             services.AddScoped<InitWindow>();
             services.AddScoped<MainWindow>();
+            services.AddScoped<ConfigurationWindow>();
+            #endregion
 
             ServiceProvider = services.BuildServiceProvider();
 

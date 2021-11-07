@@ -5,7 +5,6 @@ using System.Threading.Tasks;
 using System.Windows;
 using BaarsikTwitchBot.Annotations;
 using BaarsikTwitchBot.Controllers;
-using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Implementations.AutoRegister;
 using BaarsikTwitchBot.Models;
 using Microsoft.Extensions.DependencyInjection;
@@ -37,7 +36,7 @@ namespace BaarsikTwitchBot.Windows
             var validationResult =
                 await _botController.ValidateChannelCredentials() &&
                 await _botController.ValidateBotUserCredentials();
-            
+
             if (validationResult)
             {
                 _botController.Initialize();
@@ -56,7 +55,7 @@ namespace BaarsikTwitchBot.Windows
                         MessageBox.Show("Bot user credentials invalid", "StreamKiller - Critical Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         break;
                 }
-                this.Close();
+                OpenNextWindow<ConfigurationWindow>();
             }
         }
 

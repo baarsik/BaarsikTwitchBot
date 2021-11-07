@@ -251,7 +251,7 @@ namespace BaarsikTwitchBot.Helpers
                 return;
 
             var subscriberName = e.Subscription.Username == e.Subscription.RecipientDisplayName ? e.Subscription.RecipientDisplayName : $"{e.Subscription.RecipientDisplayName} ({e.Subscription.RecipientName})";
-            _logger.Log($"New subscriber at '{StreamerUser.Login}': {subscriberName}", LogLevel.Information);
+            _logger.Log($"New subscriber at '{StreamerUser.Login}': {subscriberName ?? e.Subscription.Username}", LogLevel.Information);
 
             OnChannelSubscription?.Invoke(sender, e);
         }
@@ -266,7 +266,7 @@ namespace BaarsikTwitchBot.Helpers
             if (isBanned)
                 return;
 
-            _logger.Log($"Reward '{e.RewardRedeemed.Redemption.Reward.Title}' redeemed at '{StreamerUser.Login}' {e.RewardRedeemed.Redemption.User.Login}. Message: \"{e.RewardRedeemed.Redemption.UserInput}\"", LogLevel.Information);
+            _logger.Log($"Reward '{e.RewardRedeemed.Redemption.Reward.Title}' redeemed by @{e.RewardRedeemed.Redemption.User.Login}. Message: \"{e.RewardRedeemed.Redemption.UserInput}\"", LogLevel.Information);
             OnRewardRedeemed?.Invoke(sender, e);
         }
         #endregion
