@@ -145,6 +145,11 @@ namespace BaarsikTwitchBot.Helpers
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         public async Task<bool> IsTokenValidAsync(string accessToken, string scopes)
         {
+            if (string.IsNullOrEmpty(accessToken))
+            {
+                return false;
+            }
+
             var tokenRoot = await _twitchApi.V5.Root.GetRootAsync(accessToken, _config.OAuth.ClientID);
             var isValid = tokenRoot.Token.Valid
                           && scopes.Split(' ').All(x => tokenRoot.Token.Auth.Scopes.Contains(x));

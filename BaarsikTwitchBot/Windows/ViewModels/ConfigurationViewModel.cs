@@ -17,17 +17,6 @@ namespace BaarsikTwitchBot.Windows.ViewModels
             }
         }
 
-        private string _clientSecret;
-        public string ClientSecret
-        {
-            get => _clientSecret;
-            set
-            {
-                _clientSecret = value;
-                OnPropertyChanged(nameof(ClientSecret));
-            }
-        }
-
         private string _channelOAuth;
         public string ChannelOAuth
         {

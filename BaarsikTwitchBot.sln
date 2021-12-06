@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.30128.74
+# Visual Studio Version 17
+VisualStudioVersion = 17.0.31912.275
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BaarsikTwitchBot", "BaarsikTwitchBot\BaarsikTwitchBot.csproj", "{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}"
 EndProject
@@ -15,16 +15,16 @@ Global
 		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Debug|Any CPU.Build.0 = Debug|x64
 		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Debug|x64.ActiveCfg = Debug|x64
 		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Debug|x64.Build.0 = Debug|x64
 		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Release|Any CPU.Build.0 = Release|Any CPU
 		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Release|x64.ActiveCfg = Release|x64
 		{2B74FCAC-71E0-4F1E-8DF0-607120FE42AA}.Release|x64.Build.0 = Release|x64
-		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Debug|Any CPU.ActiveCfg = Debug|x64
+		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Debug|Any CPU.Build.0 = Debug|x64
 		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Debug|x64.ActiveCfg = Debug|x64
 		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Debug|x64.Build.0 = Debug|x64
 		{470FE2D9-60D2-4331-9004-FBECFF3CF228}.Release|Any CPU.ActiveCfg = Release|Any CPU

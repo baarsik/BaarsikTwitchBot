@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Reflection;
 using System.Threading;
-using System.Windows;
+using AdonisUI.Controls;
 using BaarsikTwitchBot.Controllers;
 using BaarsikTwitchBot.Domain;
 using BaarsikTwitchBot.Helpers;
@@ -26,6 +26,7 @@ using TwitchLib.Client.Models;
 using TwitchLib.Communication.Clients;
 using TwitchLib.Communication.Models;
 using ILogger = BaarsikTwitchBot.Interfaces.ILogger;
+using Application = System.Windows.Application;
 
 namespace BaarsikTwitchBot
 {
@@ -63,10 +64,19 @@ namespace BaarsikTwitchBot
                 Logger.Log("Program is not protected", LogLevel.Warning);
             }
 
+            if (!IsSuccessful)
+            {
+                //MessageBox.Show($"Startup failed with following errors:\n\n{string.Join('\n', StartupErrorMessages)}", "StreamKiller - Startup Errors", MessageBoxButton.OK, MessageBoxImage.Error);
+                var configWindow = ServiceProvider.GetService<PreConfigurationWindow>();
+                configWindow.Show();
+                return;
+            }
+            
             var initWindow = ServiceProvider.GetService<InitWindow>();
             initWindow.Show();
         }
 
+        private IList<string> StartupErrorMessages { get; set; } = new List<string>();
         private IServiceProvider ServiceProvider { get; set; }
         private ILogger Logger { get; set; }
         private JsonConfig Config { get; set; }
@@ -83,37 +93,26 @@ namespace BaarsikTwitchBot
 
             if (!VMProtect.SDK.IsValidImageCRC())
             {
-                Logger.Log(VMProtect.SDK.DecryptString("Program files have been corrupted"), LogLevel.Critical);
+                var errorMessage = VMProtect.SDK.DecryptString("Program files have been corrupted");
+                StartupErrorMessages.Add(errorMessage);
+                Logger.Log(errorMessage, LogLevel.Critical);
                 IsSuccessful = false;
-                return;
             }
 
             if (string.IsNullOrEmpty(Config.OAuth.ClientID) || string.IsNullOrEmpty(Config.OAuth.ClientSecret))
             {
-                Logger.Log(VMProtect.SDK.DecryptString($"Please validate {nameof(JsonConfig.OAuth)} settings"), LogLevel.Critical);
+                var errorMessage = VMProtect.SDK.DecryptString($"Please validate {nameof(JsonConfig.OAuth)} settings");
+                StartupErrorMessages.Add(errorMessage);
+                Logger.Log(errorMessage, LogLevel.Critical);
                 IsSuccessful = false;
-                return;
             }
 
-            if (string.IsNullOrEmpty(Config.Channel.OAuth.Replace("oauth:", "")))
+            if (!string.Equals(Config.Channel.Name, VMProtect.SDK.DecryptString(Constants.User.ChannelName), StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(Config.Channel.Name))
             {
-                Logger.Log(VMProtect.SDK.DecryptString($"Please validate {nameof(JsonConfig.Channel)} settings"), LogLevel.Critical);
+                var errorMessage = VMProtect.SDK.DecryptString($"Invalid channel name: '{Config.Channel.Name}'");
+                StartupErrorMessages.Add(errorMessage);
+                Logger.Log(errorMessage, LogLevel.Critical);
                 IsSuccessful = false;
-                return;
-            }
-
-            if (!string.Equals(Config.Channel.Name, VMProtect.SDK.DecryptString(Constants.User.ChannelName), StringComparison.InvariantCultureIgnoreCase))
-            {
-                Logger.Log(VMProtect.SDK.DecryptString($"Invalid channel name: '{Config.Channel.Name}'"), LogLevel.Critical);
-                IsSuccessful = false;
-                return;
-            }
-
-            if (string.IsNullOrEmpty(Config.BotUser.Name) || string.IsNullOrEmpty(Config.BotUser.OAuth.Replace("oauth:", "")))
-            {
-                Logger.Log(VMProtect.SDK.DecryptString($"Please validate {nameof(JsonConfig.BotUser)} settings"), LogLevel.Critical);
-                IsSuccessful = false;
-                return;
             }
 
             var autoRegisterTypes = new List<Type> { typeof(IChatHook), typeof(IAutoRegister) };
@@ -121,7 +120,6 @@ namespace BaarsikTwitchBot
                 .Where(x => x.IsClass && x.GetInterfaces().Any(t => autoRegisterTypes.Contains(t)) && !x.IsAbstract)
                 .ToList();
 
-            var credentials = new ConnectionCredentials(Config.BotUser.Name, Config.BotUser.OAuth);
             var clientOptions = new ClientOptions
             {
                 MessagesAllowedInPeriod = 750
@@ -131,7 +129,12 @@ namespace BaarsikTwitchBot
             {
                 AutoReListenOnException = true
             };
-            twitchClient.Initialize(credentials, Constants.User.ChannelName);
+
+            if (IsSuccessful)
+            {
+                var credentials = new ConnectionCredentials(Config.BotUser.Name, Config.BotUser.OAuth);
+                twitchClient.Initialize(credentials, Constants.User.ChannelName);
+            }
 
             var twitchApi = new TwitchAPI
             {
@@ -163,12 +166,13 @@ namespace BaarsikTwitchBot
             #region WPF Windows (Scoped)
             services.AddScoped<InitWindow>();
             services.AddScoped<MainWindow>();
+            services.AddScoped<PreConfigurationWindow>();
             services.AddScoped<ConfigurationWindow>();
             #endregion
 
             ServiceProvider = services.BuildServiceProvider();
 
-            IsSuccessful = true;
+            IsSuccessful = !StartupErrorMessages.Any();
         }
 
         private JsonConfig GetConfig()

@@ -11,6 +11,7 @@ using BaarsikTwitchBot.Models;
 using Microsoft.Extensions.Logging;
 using TwitchLib.Client;
 using TwitchLib.Client.Events;
+using TwitchLib.Client.Models;
 using ILogger = BaarsikTwitchBot.Interfaces.ILogger;
 
 namespace BaarsikTwitchBot.Controllers
@@ -163,6 +164,11 @@ namespace BaarsikTwitchBot.Controllers
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void InitTwitchClient()
         {
+            if (!_twitchClient.IsInitialized)
+            {
+                var credentials = new ConnectionCredentials(_config.BotUser.Name, _config.BotUser.OAuth);
+                _twitchClient.Initialize(credentials, Constants.User.ChannelName);
+            }
             _twitchClient.OnConnected += (sender, args) =>
             {
                 IsConnected = true;
@@ -184,10 +190,15 @@ namespace BaarsikTwitchBot.Controllers
             };
             _twitchClient.OnFailureToReceiveJoinConfirmation += (sender, args) =>
             {
-                throw new Exception();
+                _logger.Log($"Failed to receive join confirmation at @{args.Exception.Channel}", LogLevel.Error);
             };
             _twitchClient.OnMessageReceived += OnMessageReceived;
+            if (_twitchClient.ConnectionCredentials == null)
+            {
+                _twitchClient.SetConnectionCredentials(new ConnectionCredentials(_config.BotUser.Name, _config.BotUser.OAuth));
+            }
             _twitchClient.Connect();
+            _twitchClient.JoinChannel(Constants.User.ChannelName);
         }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]

@@ -46,7 +46,6 @@ namespace BaarsikTwitchBot.Windows
         private void OnLoaded(object sender, RoutedEventArgs e)
         {
             ViewModel.ClientID = _config.OAuth.ClientID;
-            ViewModel.ClientSecret = _config.OAuth.ClientSecret;
             ViewModel.BotUserOAuth = _config.BotUser.OAuth;
             ViewModel.BotUserName = _config.BotUser.Name;
             ViewModel.ChannelOAuth = _config.Channel.OAuth;
@@ -65,6 +64,7 @@ namespace BaarsikTwitchBot.Windows
                 return;
             }
 
+            _config.BotUser.Name = ViewModel.BotUserName;
             _config.BotUser.OAuth = ViewModel.BotUserOAuth;
             _config.Channel.OAuth = ViewModel.ChannelOAuth;
             _config.Save(_logger);
@@ -98,7 +98,14 @@ namespace BaarsikTwitchBot.Windows
             if (sender is Button { Tag: Grid grid })
             {
                 var textBox = grid.Children.OfType<TextBox>().FirstOrDefault();
-                Clipboard.SetText(textBox.Text);
+                try
+                {
+                    Clipboard.SetText(textBox.Text);
+                }
+                catch (System.Runtime.InteropServices.COMException)
+                {
+                    MessageBox.Show(this, "Failed to copy", "StreamKiller", MessageBoxButton.OK, MessageBoxImage.Error);
+                }
             }
         }
     }

@@ -19,10 +19,9 @@
                         <ColumnDefinition/>
                         <ColumnDefinition Width="Auto"/>
                     </Grid.ColumnDefinitions>
-                    <TextBox extensions:WatermarkExtension.Watermark="Client ID" Margin="0,5, 5, 5" Text="{Binding ViewModel.ClientID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <TextBox extensions:WatermarkExtension.Watermark="Client ID" Margin="0,5, 5, 5" Text="{Binding ViewModel.ClientID, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Foreground="Gray"/>
                     <Button Grid.Column="1" FontFamily="{StaticResource FontAwesome5}" Content="Copy" Margin="0,5" IsTabStop="False" Click="CopyToClipboard_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
                 </Grid>
-                <TextBox extensions:WatermarkExtension.Watermark="Client Secret" Margin="0,5" Text="{Binding ViewModel.ClientSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
             </StackPanel>
         </GroupBox>
         <GroupBox Header="Channel" Margin="5">

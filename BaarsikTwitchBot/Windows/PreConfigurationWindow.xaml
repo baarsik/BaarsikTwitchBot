@@ -1,0 +1,28 @@
+﻿<controls:AdonisWindow x:Class="BaarsikTwitchBot.Windows.PreConfigurationWindow"
+                       xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                       xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                       xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+                       xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+                       xmlns:local="clr-namespace:BaarsikTwitchBot.Windows"
+                       xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
+                       xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                       mc:Ignorable="d" WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
+                       Title="StreamKiller - Configuration" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
+                       Width="600"
+                       Height="185"
+                       DataContext="{Binding RelativeSource={RelativeSource Self}}">
+    <controls:AdonisWindow.Resources>
+        <FontFamily x:Key="OpenSans">pack://application:,,,/Fonts/#Open Sans</FontFamily>
+    </controls:AdonisWindow.Resources>
+    <StackPanel Width="600">
+        <GroupBox Header="Application Data" Margin="5" FontFamily="{StaticResource OpenSans}">
+            <StackPanel>
+                <TextBox extensions:WatermarkExtension.Watermark="Client ID" Margin="0,5" Text="{Binding ViewModel.ClientID, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                <TextBox extensions:WatermarkExtension.Watermark="Client Secret" Margin="0,5" Text="{Binding ViewModel.ClientSecret, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+            </StackPanel>
+        </GroupBox>
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+            <Button FontWeight="Bold" FontSize="16" Margin="5" Content="Next >" IsTabStop="False" Click="NextButtonOnClick" FontFamily="{StaticResource OpenSans}"/>
+        </StackPanel>
+    </StackPanel>
+</controls:AdonisWindow>
