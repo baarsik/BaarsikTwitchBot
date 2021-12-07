@@ -173,7 +173,8 @@ namespace BaarsikTwitchBot.Controllers
             {
                 IsConnected = true;
                 ConnectionAttempts = 0;
-                _logger.Log($"Connected to '{Constants.User.ChannelName}' chat as '{args.BotUsername}'", LogLevel.Information);
+                _logger.Log($"Connected as '{args.BotUsername}'", LogLevel.Information);
+                _twitchClient.JoinChannel(Constants.User.ChannelName);
             };
             _twitchClient.OnConnectionError += (sender, args) =>
             {
@@ -188,17 +189,19 @@ namespace BaarsikTwitchBot.Controllers
                 _logger.Log($"IRC reconnection attempt #{++ConnectionAttempts}", LogLevel.Information);
                 _twitchClient.Reconnect();
             };
-            _twitchClient.OnFailureToReceiveJoinConfirmation += (sender, args) =>
-            {
-                _logger.Log($"Failed to receive join confirmation at @{args.Exception.Channel}", LogLevel.Error);
-            };
+            _twitchClient.OnJoinedChannel += (sender, args) => _logger.Log($"Joined channel @{args.Channel}", LogLevel.Information);
+            _twitchClient.OnFailureToReceiveJoinConfirmation += (sender, args) => _logger.Log($"Failed to receive join confirmation at @{args.Exception.Channel}", LogLevel.Error);
+            
+            #if DEBUG
+            _twitchClient.OnLog += (sender, args) => _logger.Log(args.Data, LogLevel.Debug);
+            #endif
+
             _twitchClient.OnMessageReceived += OnMessageReceived;
             if (_twitchClient.ConnectionCredentials == null)
             {
                 _twitchClient.SetConnectionCredentials(new ConnectionCredentials(_config.BotUser.Name, _config.BotUser.OAuth));
             }
             _twitchClient.Connect();
-            _twitchClient.JoinChannel(Constants.User.ChannelName);
         }
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
