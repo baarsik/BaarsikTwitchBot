@@ -80,7 +80,7 @@ namespace BaarsikTwitchBot
         private IServiceProvider ServiceProvider { get; set; }
         private ILogger Logger { get; set; }
         private JsonConfig Config { get; set; }
-        private bool IsSuccessful { get; set; }
+        private bool IsSuccessful => !StartupErrorMessages.Any();
 
         [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void ConfigureServices(IServiceCollection services)
@@ -96,7 +96,6 @@ namespace BaarsikTwitchBot
                 var errorMessage = VMProtect.SDK.DecryptString("Program files have been corrupted");
                 StartupErrorMessages.Add(errorMessage);
                 Logger.Log(errorMessage, LogLevel.Critical);
-                IsSuccessful = false;
             }
 
             if (string.IsNullOrEmpty(Config.OAuth.ClientID) || string.IsNullOrEmpty(Config.OAuth.ClientSecret))
@@ -104,7 +103,6 @@ namespace BaarsikTwitchBot
                 var errorMessage = VMProtect.SDK.DecryptString($"Please validate {nameof(JsonConfig.OAuth)} settings");
                 StartupErrorMessages.Add(errorMessage);
                 Logger.Log(errorMessage, LogLevel.Critical);
-                IsSuccessful = false;
             }
 
             if (!string.Equals(Config.Channel.Name, VMProtect.SDK.DecryptString(Constants.User.ChannelName), StringComparison.InvariantCultureIgnoreCase) && !string.IsNullOrEmpty(Config.Channel.Name))
@@ -112,7 +110,6 @@ namespace BaarsikTwitchBot
                 var errorMessage = VMProtect.SDK.DecryptString($"Invalid channel name: '{Config.Channel.Name}'");
                 StartupErrorMessages.Add(errorMessage);
                 Logger.Log(errorMessage, LogLevel.Critical);
-                IsSuccessful = false;
             }
 
             var autoRegisterTypes = new List<Type> { typeof(IChatHook), typeof(IAutoRegister) };
@@ -171,8 +168,6 @@ namespace BaarsikTwitchBot
             #endregion
 
             ServiceProvider = services.BuildServiceProvider();
-
-            IsSuccessful = !StartupErrorMessages.Any();
         }
 
         private JsonConfig GetConfig()
