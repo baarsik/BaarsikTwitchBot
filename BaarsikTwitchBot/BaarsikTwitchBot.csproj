@@ -53,6 +53,7 @@
   <ItemGroup>
     <PackageReference Include="AdonisUI" Version="1.17.0" />
     <PackageReference Include="AdonisUI.ClassicTheme" Version="1.17.0" />
+    <PackageReference Include="CefSharp.Wpf.NETCore" Version="96.0.142" />
     <PackageReference Include="Microsoft.AspNetCore" Version="2.2.0" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Razor.RuntimeCompilation" Version="5.0.4" />
     <PackageReference Include="Microsoft.AspNetCore.SignalR.Common" Version="5.0.4" />

@@ -66,18 +66,14 @@ namespace BaarsikTwitchBot
 
             if (!IsSuccessful)
             {
-                //MessageBox.Show($"Startup failed with following errors:\n\n{string.Join('\n', StartupErrorMessages)}", "StreamKiller - Startup Errors", MessageBoxButton.OK, MessageBoxImage.Error);
-                var configWindow = ServiceProvider.GetService<PreConfigurationWindow>();
-                configWindow.Show();
+                host.Services.GetRequiredService<PreConfigurationWindow>().Show();
                 return;
             }
-            
-            var initWindow = ServiceProvider.GetService<InitWindow>();
-            initWindow.Show();
+
+            host.Services.GetRequiredService<InitWindow>().Show();
         }
 
         private IList<string> StartupErrorMessages { get; set; } = new List<string>();
-        private IServiceProvider ServiceProvider { get; set; }
         private ILogger Logger { get; set; }
         private JsonConfig Config { get; set; }
         private bool IsSuccessful => !StartupErrorMessages.Any();
@@ -167,7 +163,7 @@ namespace BaarsikTwitchBot
             services.AddScoped<ConfigurationWindow>();
             #endregion
 
-            ServiceProvider = services.BuildServiceProvider();
+            services.BuildServiceProvider();
         }
 
         private JsonConfig GetConfig()

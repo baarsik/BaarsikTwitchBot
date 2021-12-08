@@ -6,54 +6,72 @@
                        xmlns:local="clr-namespace:BaarsikTwitchBot.Windows"
                        xmlns:controls="clr-namespace:AdonisUI.Controls;assembly=AdonisUI"
                        xmlns:extensions="clr-namespace:AdonisUI.Extensions;assembly=AdonisUI"
+                       xmlns:wpf="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
                        mc:Ignorable="d" WindowStartupLocation="CenterScreen" IconVisibility="Collapsed"
                        Title="StreamKiller - Configuration" SizeToContent="WidthAndHeight" ResizeMode="NoResize"
                        Width="600"
                        Height="505"
                        FontFamily="{StaticResource OpenSans}" DataContext="{Binding RelativeSource={RelativeSource Self}}">
-    <StackPanel Width="600">
-        <GroupBox Header="Application Data" Margin="5">
-            <StackPanel>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox extensions:WatermarkExtension.Watermark="Client ID" Margin="0,5, 5, 5" Text="{Binding ViewModel.ClientID, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Foreground="Gray"/>
-                    <Button Grid.Column="1" FontFamily="{StaticResource FontAwesome5}" Content="Copy" Margin="0,5" IsTabStop="False" Click="CopyToClipboard_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
-                </Grid>
+    <StackPanel>
+        <wpf:ChromiumWebBrowser x:Name="WebBrowser" Address="https://www.google.com" Height="480" Width="600" AddressChanged="WebBrowser_OnAddressChanged" Visibility="Collapsed" FrameLoadEnd="WebBrowser_OnFrameLoadEnd"/>
+        <StackPanel Width="600" Name="MainStackPanel">
+            <GroupBox Header="Application Data" Margin="5">
+                <StackPanel>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox extensions:WatermarkExtension.Watermark="Client ID" Margin="0,5, 5, 5" Text="{Binding ViewModel.ClientID, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}" IsReadOnly="True" Foreground="Gray"/>
+                        <Button Grid.Column="1" FontFamily="{StaticResource FontAwesome5}" Content="Copy" Margin="0,5" IsTabStop="False" Click="CopyToClipboard_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Channel" Margin="5">
+                <StackPanel>
+                    <TextBox extensions:WatermarkExtension.Watermark="Name" Margin="0,5" IsReadOnly="True" Text="{Binding ViewModel.ChannelName, Mode=OneWay}" Foreground="Gray" IsTabStop="False"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox extensions:WatermarkExtension.Watermark="Scopes" Margin="0,5, 5, 5" IsReadOnly="True" Text="{Binding ViewModel.ChannelScope, Mode=OneWay}" Foreground="Gray" IsTabStop="False"/>
+                        <Button Grid.Column="1" FontFamily="{StaticResource FontAwesome5}" Content="Copy" Margin="0,5" IsTabStop="False" Click="CopyToClipboard_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox extensions:WatermarkExtension.Watermark="OAuth" Margin="0,5,5,5" Text="{Binding ViewModel.ChannelOAuth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding ViewModel.ChannelScope, Mode=OneWay}"/>
+                        <Button Grid.Column="1" Content="Generate" Margin="0,5" IsTabStop="False" Click="OpenTokenGenerationBrowser_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+            <GroupBox Header="Bot User" Margin="5">
+                <StackPanel>
+                    <TextBox extensions:WatermarkExtension.Watermark="Name" Margin="0,5" Text="{Binding ViewModel.BotUserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox extensions:WatermarkExtension.Watermark="Scopes" Margin="0,5, 5, 5" IsReadOnly="True" Text="{Binding ViewModel.BotUserScope, Mode=OneWay}" Foreground="Gray" IsTabStop="False"/>
+                        <Button Grid.Column="1" FontFamily="{StaticResource FontAwesome5}" Content="Copy" Margin="0,5" IsTabStop="False" Click="CopyToClipboard_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
+                    </Grid>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox extensions:WatermarkExtension.Watermark="OAuth" Margin="0,5,5,5" Text="{Binding ViewModel.BotUserOAuth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" Tag="{Binding ViewModel.BotUserScope, Mode=OneWay}"/>
+                        <Button Grid.Column="1" Content="Generate" Margin="0,5" IsTabStop="False" Click="OpenTokenGenerationBrowser_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
+                    </Grid>
+                </StackPanel>
+            </GroupBox>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button FontWeight="Bold" FontSize="16" Margin="5" Content="Next >" IsTabStop="False" Click="NextButtonOnClick"/>
             </StackPanel>
-        </GroupBox>
-        <GroupBox Header="Channel" Margin="5">
-            <StackPanel>
-                <TextBox extensions:WatermarkExtension.Watermark="Name" Margin="0,5" IsReadOnly="True" Text="{Binding ViewModel.ChannelName, Mode=OneWay}" Foreground="Gray" IsTabStop="False"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox extensions:WatermarkExtension.Watermark="Scopes" Margin="0,5, 5, 5" IsReadOnly="True" Text="{Binding ViewModel.ChannelScope, Mode=OneWay}" Foreground="Gray" IsTabStop="False"/>
-                    <Button Grid.Column="1" FontFamily="{StaticResource FontAwesome5}" Content="Copy" Margin="0,5" IsTabStop="False" Click="CopyToClipboard_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
-                </Grid>
-                <TextBox extensions:WatermarkExtension.Watermark="OAuth" Margin="0,5" Text="{Binding ViewModel.ChannelOAuth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </StackPanel>
-        </GroupBox>
-        <GroupBox Header="Bot User" Margin="5">
-            <StackPanel>
-                <TextBox extensions:WatermarkExtension.Watermark="Name" Margin="0,5" Text="{Binding ViewModel.BotUserName, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-                <Grid>
-                    <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition Width="Auto"/>
-                    </Grid.ColumnDefinitions>
-                    <TextBox extensions:WatermarkExtension.Watermark="Scopes" Margin="0,5, 5, 5" IsReadOnly="True" Text="{Binding ViewModel.BotUserScope, Mode=OneWay}" Foreground="Gray" IsTabStop="False"/>
-                    <Button Grid.Column="1" FontFamily="{StaticResource FontAwesome5}" Content="Copy" Margin="0,5" IsTabStop="False" Click="CopyToClipboard_Click" Tag="{Binding RelativeSource={RelativeSource FindAncestor, AncestorType={x:Type Grid}}, Mode=OneWay}"/>
-                </Grid>
-                <TextBox extensions:WatermarkExtension.Watermark="OAuth" Margin="0,5" Text="{Binding ViewModel.BotUserOAuth, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"/>
-            </StackPanel>
-        </GroupBox>
-        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
-            <Button FontWeight="Bold" FontSize="16" Margin="5" Content="Next >" IsTabStop="False" Click="NextButtonOnClick"/>
         </StackPanel>
     </StackPanel>
 </controls:AdonisWindow>

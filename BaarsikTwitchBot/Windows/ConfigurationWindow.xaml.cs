@@ -6,11 +6,13 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Data;
 using BaarsikTwitchBot.Annotations;
 using BaarsikTwitchBot.Extensions;
 using BaarsikTwitchBot.Helpers;
 using BaarsikTwitchBot.Models;
 using BaarsikTwitchBot.Windows.ViewModels;
+using CefSharp;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -30,6 +32,7 @@ namespace BaarsikTwitchBot.Windows
         private readonly TwitchApiHelper _twitchApi;
         private readonly ILogger _logger;
         private readonly IServiceProvider _serviceProvider;
+        private TextBox _lastUsedTokenTextbox;
 
         public ConfigurationWindow(JsonConfig config, TwitchApiHelper twitchApi, ILogger logger, IServiceProvider serviceProvider)
         {
@@ -93,6 +96,7 @@ namespace BaarsikTwitchBot.Windows
         }
         #endregion
 
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
         private void CopyToClipboard_Click(object sender, RoutedEventArgs e)
         {
             if (sender is Button { Tag: Grid grid })
@@ -107,6 +111,57 @@ namespace BaarsikTwitchBot.Windows
                     MessageBox.Show(this, "Failed to copy", "StreamKiller", MessageBoxButton.OK, MessageBoxImage.Error);
                 }
             }
+        }
+
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
+        private void OpenTokenGenerationBrowser_Click(object sender, RoutedEventArgs e)
+        {
+            if (sender is Button { Tag: Grid grid })
+            {
+                var textBox = grid.Children.OfType<TextBox>().Single();
+                _lastUsedTokenTextbox = textBox;
+                var scope = textBox.Tag as string;
+                this.MainStackPanel.Visibility = Visibility.Collapsed;
+                this.WebBrowser.LoadUrl($"https://id.twitch.tv/oauth2/authorize?client_id={_config.OAuth.ClientID}&redirect_uri=http://localhost&response_type=token&scope={scope}");
+                this.WebBrowser.Tag = textBox;
+                this.WebBrowser.Visibility = Visibility.Visible;
+            }
+        }
+
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
+        private void WebBrowser_OnAddressChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.NewValue is string newUrl && newUrl.Contains("#access_token="))
+            {
+                var token = newUrl.Substring(newUrl.IndexOf("#acc", StringComparison.InvariantCulture) + 14, 30);
+                var tokenTextBox = this.WebBrowser.Tag as TextBox;
+                tokenTextBox.Text = token;
+                this.WebBrowser.Visibility = Visibility.Collapsed;
+                this.MainStackPanel.Visibility = Visibility.Visible;
+            }
+        }
+
+        [Obfuscation(Feature = Constants.Obfuscation.Virtualization, Exclude = false)]
+        private async void WebBrowser_OnFrameLoadEnd(object? sender, FrameLoadEndEventArgs e)
+        {
+            if (!e.Frame.IsMain)
+            {
+                return;
+            }
+
+            var source = await e.Frame.GetSourceAsync();
+            if (!source.Contains("#access_token="))
+            {
+                return;
+            }
+
+            var token = source.Substring(source.IndexOf("#acc", StringComparison.InvariantCulture) + 14, 30);
+            Dispatcher.Invoke(() =>
+            {
+                _lastUsedTokenTextbox.Text = token;
+                this.WebBrowser.Visibility = Visibility.Collapsed;
+                this.MainStackPanel.Visibility = Visibility.Visible;
+            });
         }
     }
 }
